@@ -16,114 +16,114 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
     <!-- صفحه لاگین (Authentication Overlay) -->
-    <div id="login-overlay" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 border border-gray-100">
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 border border-slate-100">
             <div class="text-center mb-8">
-                <div class="bg-indigo-600 text-white w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold mx-auto mb-3 shadow-lg shadow-indigo-200">ف</div>
-                <h1 class="text-2xl font-bold text-gray-900">ورود به فیت‌پنل</h1>
-                <p class="text-sm text-gray-500 mt-1">سامانه مدیریت یکپارچه باشگاه‌های ورزشی</p>
+                <div class="w-12 h-12 bg-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100 mb-3">ف</div>
+                <h1 class="text-xl font-bold text-slate-900">فیت‌پنل</h1>
+                <p class="text-xs text-slate-400 mt-1">سامانه مدیریت یکپارچه باشگاه ورزشی</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">نام کاربری</label>
-                    <input type="text" id="login-username" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="مثال: admin">
+                    <label class="block text-xs font-medium text-slate-600 mb-1.5">نام کاربری</label>
+                    <input type="text" id="login-username" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-600 transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">رمز عبور</label>
-                    <input type="password" id="login-password" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="••••••••">
+                    <label class="block text-xs font-medium text-slate-600 mb-1.5">رمز عبور</label>
+                    <input type="password" id="login-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-600 transition">
                 </div>
-                <div id="login-error" class="text-red-500 text-xs hidden text-center">نام کاربری یا رمز عبور اشتباه است.</div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition shadow-md shadow-indigo-100 text-sm">ورود به سیستم</button>
+                <div id="login-error" class="text-rose-500 text-xs hidden text-center font-medium">نام کاربری یا رمز عبور اشتباه است.</div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-sm transition shadow-lg shadow-indigo-100">ورود به پنل</button>
             </form>
-            <div class="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
-                اطلاعات پیش‌فرض مدیریت:<br>
-                نام کاربری: <span class="font-semibold text-gray-600">admin</span> | رمز عبور: <span class="font-semibold text-gray-600">admin123</span>
+            <div class="mt-6 pt-6 border-t border-slate-100 text-center text-[11px] text-slate-400 leading-relaxed">
+                حساب پیش‌فرض مدیریت:<br>
+                نام کاربری: <span class="font-semibold text-slate-600">admin</span> | رمز عبور: <span class="font-semibold text-slate-600">admin123</span>
             </div>
         </div>
     </div>
 
     <!-- بدنه اصلی پنل (پس از لاگین) -->
     <div id="app-container" class="hidden flex-1 flex flex-col">
-        <!-- هدر سایت -->
-        <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+        <!-- هدر -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <div class="flex items-center space-x-4 space-x-reverse">
-                    <div class="bg-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg">ف</div>
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold">ف</div>
                     <div>
-                        <h1 class="font-bold text-gray-900 text-base">فیت‌پنل</h1>
-                        <p class="text-xs text-gray-500">مدیریت باشگاه بدنسازی</p>
+                        <h1 class="font-bold text-slate-900 text-sm">فیت‌پنل</h1>
+                        <p class="text-[11px] text-slate-400">سیستم مدیریت باشگاه</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3 space-x-reverse">
-                    <span id="user-badge" class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-medium">مدیر کل</span>
-                    <button onclick="logout()" class="text-gray-500 hover:text-red-600 text-xs px-3 py-1.5 rounded-lg border border-gray-200 hover:border-red-200 transition">خروج از حساب</button>
+                    <span id="user-badge" class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-xl font-medium">مدیر کل</span>
+                    <button onclick="logout()" class="text-xs text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 px-3 py-1.5 rounded-xl transition">خروج</button>
                 </div>
             </div>
-            <!-- ناوبری تب‌ها -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 space-x-reverse overflow-x-auto border-t border-gray-100 py-2">
-                <button onclick="switchTab('dashboard')" class="tab-btn px-4 py-2 rounded-lg text-xs font-medium bg-indigo-50 text-indigo-700 transition">داشبورد و آمار</button>
-                <button onclick="switchTab('sports')" class="tab-btn px-4 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition">رشته‌های ورزشی</button>
-                <button onclick="switchTab('coaches')" class="tab-btn px-4 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition">مربیان</button>
-                <button onclick="switchTab('schedules')" class="tab-btn px-4 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition">سانس‌ها و کلاس‌ها</button>
-                <button onclick="switchTab('athletes')" class="tab-btn px-4 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition">ورزشکاران</button>
-                <button onclick="switchTab('finance')" class="tab-btn px-4 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition">امور مالی و شهریه</button>
-                <button onclick="switchTab('users')" id="nav-users-tab" class="tab-btn px-4 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition">مدیریت کاربران</button>
+            <!-- تب‌های ناوبری مینیمال -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 space-x-reverse overflow-x-auto border-t border-slate-100 py-2">
+                <button onclick="switchTab('dashboard')" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium bg-indigo-50 text-indigo-700 transition">داشبورد و آمار</button>
+                <button onclick="switchTab('sports')" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition">رشته‌های ورزشی</button>
+                <button onclick="switchTab('coaches')" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition">مربیان</button>
+                <button onclick="switchTab('schedules')" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition">سانس‌ها و کلاس‌ها</button>
+                <button onclick="switchTab('athletes')" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition">ورزشکاران</button>
+                <button onclick="switchTab('finance')" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition">امور مالی و شهریه</button>
+                <button onclick="switchTab('users')" id="nav-users-tab" class="tab-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition">مدیریت کاربران</button>
             </div>
         </header>
 
-        <!-- محتوای تب‌ها -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        <!-- محتوا -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
 
             <!-- تب ۱: داشبورد -->
             <div id="tab-dashboard" class="tab-content space-y-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <p class="text-xs text-gray-500 font-medium">کل ورزشکاران فعال</p>
-                        <h3 id="stat-athletes" class="text-2xl font-bold text-gray-900 mt-2">0</h3>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <p class="text-xs text-slate-400 font-medium">ورزشکاران فعال</p>
+                        <h3 id="stat-athletes" class="text-2xl font-bold text-slate-800 mt-2">0</h3>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <p class="text-xs text-gray-500 font-medium">مربیان فعال</p>
-                        <h3 id="stat-coaches" class="text-2xl font-bold text-gray-900 mt-2">0</h3>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <p class="text-xs text-slate-400 font-medium">مربیان فعال</p>
+                        <h3 id="stat-coaches" class="text-2xl font-bold text-slate-800 mt-2">0</h3>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <p class="text-xs text-gray-500 font-medium">سانس‌های دایر</p>
-                        <h3 id="stat-schedules" class="text-2xl font-bold text-gray-900 mt-2">0</h3>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <p class="text-xs text-slate-400 font-medium">سانس‌های دایر</p>
+                        <h3 id="stat-schedules" class="text-2xl font-bold text-slate-800 mt-2">0</h3>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <p class="text-xs text-gray-500 font-medium">کل درآمد ثبت‌شده</p>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <p class="text-xs text-slate-400 font-medium">کل درآمد ثبت‌شده</p>
                         <h3 id="stat-income" class="text-2xl font-bold text-emerald-600 mt-2">۰ تومان</h3>
                     </div>
                 </div>
 
-                <div class="bg-indigo-600 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-bold">ثبت‌نام سریع ورزشکار جدید</h2>
-                        <p class="text-indigo-100 text-xs mt-1">با کلیک روی دکمه زیر مستقیماً ورزشکار جدید را به سانس‌ها و کلاس‌ها اضافه کنید.</p>
+                        <h3 class="font-bold text-slate-800 text-sm">ثبت‌نام سریع ورزشکار</h3>
+                        <p class="text-xs text-slate-400 mt-1">با یک کلیک ورزشکار جدید را به سانس‌های باشگاه اضافه کنید.</p>
                     </div>
-                    <button onclick="switchTab('athletes'); openAddAthleteModal();" class="mt-4 md:mt-0 bg-white text-indigo-600 px-5 py-2.5 rounded-xl font-medium text-xs hover:bg-indigo-50 transition shadow-sm">ثبت‌نام ورزشکار</button>
+                    <button onclick="switchTab('athletes'); openAddAthleteModal();" class="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition shadow-md shadow-indigo-100">ثبت‌نام ورزشکار جدید</button>
                 </div>
             </div>
 
             <!-- تب ۲: رشته‌های ورزشی -->
             <div id="tab-sports" class="tab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-gray-900">مدیریت رشته‌های ورزشی</h2>
-                    <button onclick="openAddSportModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-medium hover:bg-indigo-700 transition">افزودن رشته جدید</button>
+                    <h2 class="text-base font-bold text-slate-800">رشته‌های ورزشی</h2>
+                    <button onclick="openAddSportModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition">افزودن رشته</button>
                 </div>
-                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
                     <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs font-semibold border-b border-gray-200">
+                            <tr class="bg-slate-50 text-slate-400 text-xs font-medium border-b border-slate-200">
                                 <th class="p-4">نام رشته</th>
                                 <th class="p-4">توضیحات</th>
                                 <th class="p-4">عملیات</th>
                             </tr>
                         </thead>
-                        <tbody id="sports-table-body" class="text-sm divide-y divide-gray-100">
-                            <tr><td colspan="3" class="p-8 text-center text-gray-400">هیچ رشته‌ای ثبت نشده است.</td></tr>
+                        <tbody id="sports-table-body" class="text-sm divide-y divide-slate-100">
+                            <tr><td colspan="3" class="p-8 text-center text-slate-400 text-xs">هیچ رشته‌ای ثبت نشده است.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -132,13 +132,13 @@
             <!-- تب ۳: مربیان -->
             <div id="tab-coaches" class="tab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-gray-900">مدیریت مربیان باشگاه</h2>
-                    <button onclick="openAddCoachModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-medium hover:bg-indigo-700 transition">افزودن مربی جدید</button>
+                    <h2 class="text-base font-bold text-slate-800">مربیان باشگاه</h2>
+                    <button onclick="openAddCoachModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition">افزودن مربی</button>
                 </div>
-                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
                     <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs font-semibold border-b border-gray-200">
+                            <tr class="bg-slate-50 text-slate-400 text-xs font-medium border-b border-slate-200">
                                 <th class="p-4">نام مربی</th>
                                 <th class="p-4">تخصص / رشته</th>
                                 <th class="p-4">درصد پورسانت</th>
@@ -146,8 +146,8 @@
                                 <th class="p-4">عملیات</th>
                             </tr>
                         </thead>
-                        <tbody id="coaches-table-body" class="text-sm divide-y divide-gray-100">
-                            <tr><td colspan="5" class="p-8 text-center text-gray-400">هیچ مربی ثبت نشده است.</td></tr>
+                        <tbody id="coaches-table-body" class="text-sm divide-y divide-slate-100">
+                            <tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">هیچ مربی ثبت نشده است.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -156,24 +156,24 @@
             <!-- تب ۴: سانس‌ها -->
             <div id="tab-schedules" class="tab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-gray-900">سانس‌ها و کلاس‌های ورزشی</h2>
-                    <button onclick="openAddScheduleModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-medium hover:bg-indigo-700 transition">تعریف سانس جدید</button>
+                    <h2 class="text-base font-bold text-slate-800">سانس‌ها و کلاس‌ها</h2>
+                    <button onclick="openAddScheduleModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition">تعریف سانس</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="schedules-grid">
-                    <div class="col-span-full bg-white p-8 rounded-2xl border border-gray-200 text-center text-gray-400">هیچ سانسی تعریف نشده است.</div>
+                    <div class="col-span-full bg-white p-8 rounded-2xl border border-slate-200/80 text-center text-slate-400 text-xs">هیچ سانسی تعریف نشده است.</div>
                 </div>
             </div>
 
             <!-- تب ۵: ورزشکاران -->
             <div id="tab-athletes" class="tab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-gray-900">لیست ورزشکاران</h2>
-                    <button onclick="openAddAthleteModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-medium hover:bg-indigo-700 transition">ثبت‌نام ورزشکار جدید</button>
+                    <h2 class="text-base font-bold text-slate-800">ورزشکاران</h2>
+                    <button onclick="openAddAthleteModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition">ثبت‌نام ورزشکار</button>
                 </div>
-                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
                     <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs font-semibold border-b border-gray-200">
+                            <tr class="bg-slate-50 text-slate-400 text-xs font-medium border-b border-slate-200">
                                 <th class="p-4">نام ورزشکار</th>
                                 <th class="p-4">شماره تماس</th>
                                 <th class="p-4">سانس / کلاس</th>
@@ -181,8 +181,8 @@
                                 <th class="p-4">عملیات</th>
                             </tr>
                         </thead>
-                        <tbody id="athletes-table-body" class="text-sm divide-y divide-gray-100">
-                            <tr><td colspan="5" class="p-8 text-center text-gray-400">هیچ ورزشکاری ثبت‌نام نشده است.</td></tr>
+                        <tbody id="athletes-table-body" class="text-sm divide-y divide-slate-100">
+                            <tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">هیچ ورزشکاری ثبت‌نام نشده است.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -190,11 +190,11 @@
 
             <!-- تب ۶: امور مالی -->
             <div id="tab-finance" class="tab-content hidden space-y-6">
-                <h2 class="text-lg font-bold text-gray-900">مدیریت شهریه‌ها و پرداخت‌ها</h2>
-                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                <h2 class="text-base font-bold text-slate-800">امور مالی و شهریه‌ها</h2>
+                <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
                     <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs font-semibold border-b border-gray-200">
+                            <tr class="bg-slate-50 text-slate-400 text-xs font-medium border-b border-slate-200">
                                 <th class="p-4">ورزشکار</th>
                                 <th class="p-4">مبلغ (تومان)</th>
                                 <th class="p-4">تاریخ پرداخت</th>
@@ -202,8 +202,8 @@
                                 <th class="p-4">عملیات</th>
                             </tr>
                         </thead>
-                        <tbody id="payments-table-body" class="text-sm divide-y divide-gray-100">
-                            <tr><td colspan="5" class="p-8 text-center text-gray-400">تراکنشی ثبت نشده است.</td></tr>
+                        <tbody id="payments-table-body" class="text-sm divide-y divide-slate-100">
+                            <tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">تراکنشی ثبت نشده است.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -212,21 +212,19 @@
             <!-- تب ۷: مدیریت کاربران -->
             <div id="tab-users" class="tab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-gray-900">مدیریت کاربران و سطح دسترسی‌ها</h2>
-                    <button onclick="openAddUserModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-medium hover:bg-indigo-700 transition">افزودن کاربر جدید</button>
+                    <h2 class="text-base font-bold text-slate-800">مدیریت کاربران و دسترسی‌ها</h2>
+                    <button onclick="openAddUserModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition">افزودن کاربر</button>
                 </div>
-                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
                     <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs font-semibold border-b border-gray-200">
+                            <tr class="bg-slate-50 text-slate-400 text-xs font-medium border-b border-slate-200">
                                 <th class="p-4">نام کاربری</th>
                                 <th class="p-4">نوع دسترسی (نقش)</th>
                                 <th class="p-4">عملیات</th>
                             </tr>
                         </thead>
-                        <tbody id="users-table-body" class="text-sm divide-y divide-gray-100">
-                            <!-- بارگذاری پویا -->
-                        </tbody>
+                        <tbody id="users-table-body" class="text-sm divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
@@ -234,166 +232,159 @@
         </main>
     </div>
 
-    <!-- مودال‌ها و پنجره‌های پاپ‌آپ -->
-    
-    <!-- مودال ثبت رشته -->
-    <div id="modal-sport" class="fixed inset-0 bg-gray-900/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-            <h3 class="text-lg font-bold mb-4">افزودن رشته ورزشی جدید</h3>
-            <form onsubmit="saveSport(event)" class="space-y-4">
+    <!-- مودال‌ها -->
+    <div id="modal-sport" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <h3 class="font-bold text-slate-800 text-sm">افزودن رشته ورزشی</h3>
+            <form onsubmit="saveSport(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">نام رشته</label>
-                    <input type="text" id="sport-name" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">نام رشته</label>
+                    <input type="text" id="sport-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">توضیحات</label>
-                    <textarea id="sport-desc" class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm"></textarea>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">توضیحات</label>
+                    <textarea id="sport-desc" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600"></textarea>
                 </div>
                 <div class="flex justify-end space-x-2 space-x-reverse pt-2">
-                    <button type="button" onclick="closeModal('modal-sport')" class="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 bg-gray-100">انصراف</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600">ذخیره</button>
+                    <button type="button" onclick="closeModal('modal-sport')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200">انصراف</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700">ذخیره</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- مودال ثبت مربی -->
-    <div id="modal-coach" class="fixed inset-0 bg-gray-900/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-            <h3 class="text-lg font-bold mb-4">افزودن مربی جدید</h3>
-            <form onsubmit="saveCoach(event)" class="space-y-4">
+    <div id="modal-coach" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <h3 class="font-bold text-slate-800 text-sm">افزودن مربی جدید</h3>
+            <form onsubmit="saveCoach(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">نام و نام خانوادگی مربی</label>
-                    <input type="text" id="coach-name" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">نام و نام خانوادگی</label>
+                    <input type="text" id="coach-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">تخصص / رشته</label>
-                    <input type="text" id="coach-specialty" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">تخصص / رشته</label>
+                    <input type="text" id="coach-specialty" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">درصد پورسانت (%)</label>
-                    <input type="number" id="coach-commission" min="0" max="100" value="50" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">درصد پورسانت (%)</label>
+                    <input type="number" id="coach-commission" min="0" max="100" value="50" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">شماره تماس</label>
-                    <input type="text" id="coach-phone" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">شماره تماس</label>
+                    <input type="text" id="coach-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div class="flex justify-end space-x-2 space-x-reverse pt-2">
-                    <button type="button" onclick="closeModal('modal-coach')" class="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 bg-gray-100">انصراف</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600">ذخیره</button>
+                    <button type="button" onclick="closeModal('modal-coach')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200">انصراف</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700">ذخیره</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- مودال ثبت سانس -->
-    <div id="modal-schedule" class="fixed inset-0 bg-gray-900/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-            <h3 class="text-lg font-bold mb-4">تعریف سانس جدید</h3>
-            <form onsubmit="saveSchedule(event)" class="space-y-4">
+    <div id="modal-schedule" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <h3 class="font-bold text-slate-800 text-sm">تعریف سانس جدید</h3>
+            <form onsubmit="saveSchedule(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">عنوان سانس (مثلاً بدنسازی صبح)</label>
-                    <input type="text" id="sched-title" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">عنوان سانس</label>
+                    <input type="text" id="sched-title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">انتخاب مربی</label>
-                    <select id="sched-coach" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm"></select>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">انتخاب مربی</label>
+                    <select id="sched-coach" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600"></select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">ساعت و روزها</label>
-                    <input type="text" id="sched-time" placeholder="مثلاً زوج ۱۶ الی ۱۷:۳۰" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">روزها و ساعت</label>
+                    <input type="text" id="sched-time" placeholder="مثلاً زوج ۱۶ الی ۱۷:۳۰" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">مبلغ شهریه دوره (تومان)</label>
-                    <input type="number" id="sched-price" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">مبلغ شهریه (تومان)</label>
+                    <input type="number" id="sched-price" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div class="flex justify-end space-x-2 space-x-reverse pt-2">
-                    <button type="button" onclick="closeModal('modal-schedule')" class="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 bg-gray-100">انصراف</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600">ذخیره</button>
+                    <button type="button" onclick="closeModal('modal-schedule')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200">انصراف</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700">ذخیره</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- مودال ثبت‌نام ورزشکار -->
-    <div id="modal-athlete" class="fixed inset-0 bg-gray-900/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-            <h3 class="text-lg font-bold mb-4">ثبت‌نام ورزشکار جدید</h3>
-            <form onsubmit="saveAthlete(event)" class="space-y-4">
+    <div id="modal-athlete" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <h3 class="font-bold text-slate-800 text-sm">ثبت‌نام ورزشکار جدید</h3>
+            <form onsubmit="saveAthlete(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">نام و نام خانوادگی</label>
-                    <input type="text" id="athlete-name" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">نام و نام خانوادگی</label>
+                    <input type="text" id="athlete-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">شماره تماس</label>
-                    <input type="text" id="athlete-phone" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">شماره تماس</label>
+                    <input type="text" id="athlete-phone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">انتخاب سانس / کلاس</label>
-                    <select id="athlete-schedule" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm"></select>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">انتخاب سانس</label>
+                    <select id="athlete-schedule" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600"></select>
                 </div>
                 <div class="flex justify-end space-x-2 space-x-reverse pt-2">
-                    <button type="button" onclick="closeModal('modal-athlete')" class="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 bg-gray-100">انصراف</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600">ثبت‌نام و صدور فاکتور</button>
+                    <button type="button" onclick="closeModal('modal-athlete')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200">انصراف</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700">ثبت‌نام</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- مودال تعریف کاربر جدید -->
-    <div id="modal-user" class="fixed inset-0 bg-gray-900/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-            <h3 class="text-lg font-bold mb-4">افزودن کاربر جدید</h3>
-            <form onsubmit="saveUser(event)" class="space-y-4">
+    <div id="modal-user" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <h3 class="font-bold text-slate-800 text-sm">افزودن کاربر جدید</h3>
+            <form onsubmit="saveUser(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">نام کاربری</label>
-                    <input type="text" id="new-username" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">نام کاربری</label>
+                    <input type="text" id="new-username" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">رمز عبور</label>
-                    <input type="password" id="new-password" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">رمز عبور</label>
+                    <input type="password" id="new-password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">سطح دسترسی</label>
-                    <select id="new-role" class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">سطح دسترسی</label>
+                    <select id="new-role" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600">
                         <option value="مدیر کل">مدیر کل (دسترسی کامل)</option>
-                        <option value="مسئول پذیرش">مسئول پذیرش (ثبت‌نام و شهریه)</option>
-                        <option value="مربی">مربی (مشاهده سانس‌ها)</option>
+                        <option value="مسئول پذیرش">مسئول پذیرش (ثبت‌نام و مالی)</option>
+                        <option value="مربی">مربی</option>
                     </select>
                 </div>
                 <div class="flex justify-end space-x-2 space-x-reverse pt-2">
-                    <button type="button" onclick="closeModal('modal-user')" class="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 bg-gray-100">انصراف</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600">ذخیره کاربر</button>
+                    <button type="button" onclick="closeModal('modal-user')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200">انصراف</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700">ذخیره</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- مودال چاپ قبض شهریه (اصلاح‌شده) -->
-    <div id="modal-receipt" class="fixed inset-0 bg-gray-900/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
-            <div id="print-area" class="space-y-4">
-                <div class="text-center pb-4 border-b border-gray-200">
-                    <h2 class="text-lg font-bold text-gray-900">رسید پرداخت شهریه باشگاه</h2>
-                    <p class="text-xs text-gray-500 mt-1">فیت‌پنل - سیستم مدیریت باشگاه</p>
+    <!-- مودال چاپ قبض -->
+    <div id="modal-receipt" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <div id="print-area" class="space-y-3">
+                <div class="text-center pb-3 border-b border-slate-100">
+                    <h2 class="font-bold text-slate-800 text-sm">رسید پرداخت شهریه باشگاه</h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">فیت‌پنل</p>
                 </div>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between"><span class="text-gray-500">نام ورزشکار:</span> <span id="rec-athlete" class="font-bold">---</span></div>
-                    <div class="flex justify-between"><span class="text-gray-500">سانس مربوطه:</span> <span id="rec-schedule" class="font-semibold">---</span></div>
-                    <div class="flex justify-between"><span class="text-gray-500">مبلغ پرداخت شده:</span> <span id="rec-amount" class="font-bold text-emerald-600">---</span></div>
-                    <div class="flex justify-between"><span class="text-gray-500">تاریخ تراکنش:</span> <span id="rec-date">---</span></div>
-                    <div class="flex justify-between"><span class="text-gray-500">وضعیت:</span> <span class="text-emerald-600 font-bold">پرداخت‌شده (تایید شده)</span></div>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between"><span class="text-slate-400">ورزشکار:</span> <span id="rec-athlete" class="font-bold text-slate-800">---</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">سانس:</span> <span id="rec-schedule" class="font-medium text-slate-700">---</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">مبلغ:</span> <span id="rec-amount" class="font-bold text-emerald-600">---</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">تاریخ:</span> <span id="rec-date" class="text-slate-700">---</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">وضعیت:</span> <span class="text-emerald-600 font-bold">تسویه شده</span></div>
                 </div>
             </div>
-            <div class="flex justify-end space-x-2 space-x-reverse pt-6 border-t border-gray-100 mt-6">
-                <button type="button" onclick="closeModal('modal-receipt')" class="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 bg-gray-100">بستن</button>
-                <button type="button" onclick="window.print()" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600">چاپ قبض</button>
+            <div class="flex justify-end space-x-2 space-x-reverse pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeModal('modal-receipt')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200">بستن</button>
+                <button type="button" onclick="window.print()" class="px-4 py-2 rounded-xl text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700">چاپ قبض</button>
             </div>
         </div>
     </div>
 
     <script>
-        // دیتابیس پاک‌سازی‌شده اولیه (صفر از صفر)
         let db = JSON.parse(localStorage.getItem('fitpanel_db')) || {
             users: [{ username: 'admin', pass: 'admin123', role: 'مدیر کل' }],
             sports: [],
@@ -409,7 +400,6 @@
             localStorage.setItem('fitpanel_db', JSON.stringify(db));
         }
 
-        // مدیریت لاگین
         function handleLogin(e) {
             e.preventDefault();
             const u = document.getElementById('login-username').value.trim();
@@ -422,13 +412,11 @@
                 document.getElementById('app-container').classList.remove('hidden');
                 document.getElementById('user-badge').innerText = `${currentUser.username} (${currentUser.role})`;
                 
-                // کنترل دسترسی بخش کاربران
                 if(currentUser.role !== 'مدیر کل') {
                     document.getElementById('nav-users-tab').classList.add('hidden');
                 } else {
                     document.getElementById('nav-users-tab').classList.remove('hidden');
                 }
-                
                 renderAll();
             } else {
                 document.getElementById('login-error').classList.remove('hidden');
@@ -444,15 +432,14 @@
             document.getElementById('login-error').classList.add('hidden');
         }
 
-        // ناوبری تب‌ها
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => {
                 el.classList.remove('bg-indigo-50', 'text-indigo-700');
-                el.classList.add('text-gray-600', 'hover:bg-gray-100');
+                el.classList.add('text-slate-600', 'hover:bg-slate-100');
             });
             document.getElementById('tab-' + tabId).classList.remove('hidden');
-            event.currentTarget.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            event.currentTarget.classList.remove('text-slate-600', 'hover:bg-slate-100');
             event.currentTarget.classList.add('bg-indigo-50', 'text-indigo-700');
         }
 
@@ -460,7 +447,6 @@
             document.getElementById(modalId).classList.add('hidden');
         }
 
-        // رندر کامل اطلاعات
         function renderAll() {
             renderDashboard();
             renderSports();
@@ -479,7 +465,6 @@
             document.getElementById('stat-income').innerText = totalIncome.toLocaleString() + ' تومان';
         }
 
-        // بخش رشته‌ها
         function openAddSportModal() { document.getElementById('modal-sport').classList.remove('hidden'); }
         function saveSport(e) {
             e.preventDefault();
@@ -496,14 +481,14 @@
         function renderSports() {
             const tbody = document.getElementById('sports-table-body');
             if (db.sports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-gray-400">هیچ رشته‌ای ثبت نشده است.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 text-xs">هیچ رشته‌ای ثبت نشده است.</td></tr>`;
                 return;
             }
             tbody.innerHTML = db.sports.map(s => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="p-4 font-semibold">${s.name}</td>
-                    <td class="p-4 text-gray-500">${s.desc || '---'}</td>
-                    <td class="p-4"><button onclick="deleteSport(${s.id})" class="text-red-500 hover:text-red-700 text-xs font-medium">حذف</button></td>
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-4 font-semibold text-slate-800">${s.name}</td>
+                    <td class="p-4 text-slate-500">${s.desc || '---'}</td>
+                    <td class="p-4"><button onclick="deleteSport(${s.id})" class="text-rose-500 hover:text-rose-700 text-xs font-medium">حذف</button></td>
                 </tr>
             `).join('');
         }
@@ -513,7 +498,6 @@
             renderSports();
         }
 
-        // بخش مربیان
         function openAddCoachModal() { document.getElementById('modal-coach').classList.remove('hidden'); }
         function saveCoach(e) {
             e.preventDefault();
@@ -532,16 +516,16 @@
         function renderCoaches() {
             const tbody = document.getElementById('coaches-table-body');
             if (db.coaches.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400">هیچ مربی ثبت نشده است.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">هیچ مربی ثبت نشده است.</td></tr>`;
                 return;
             }
             tbody.innerHTML = db.coaches.map(c => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="p-4 font-semibold">${c.name}</td>
-                    <td class="p-4 text-gray-500">${c.specialty}</td>
-                    <td class="p-4">${c.commission}%</td>
-                    <td class="p-4 text-gray-500">${c.phone}</td>
-                    <td class="p-4"><button onclick="deleteCoach(${c.id})" class="text-red-500 hover:text-red-700 text-xs font-medium">حذف</button></td>
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-4 font-semibold text-slate-800">${c.name}</td>
+                    <td class="p-4 text-slate-500">${c.specialty}</td>
+                    <td class="p-4 text-slate-700">${c.commission}%</td>
+                    <td class="p-4 text-slate-500">${c.phone}</td>
+                    <td class="p-4"><button onclick="deleteCoach(${c.id})" class="text-rose-500 hover:text-rose-700 text-xs font-medium">حذف</button></td>
                 </tr>
             `).join('');
         }
@@ -551,7 +535,6 @@
             renderCoaches();
         }
 
-        // بخش سانس‌ها
         function openAddScheduleModal() {
             const select = document.getElementById('sched-coach');
             select.innerHTML = db.coaches.map(c => `<option value="${c.name}">${c.name} (${c.specialty})</option>`).join('');
@@ -575,19 +558,19 @@
         function renderSchedules() {
             const grid = document.getElementById('schedules-grid');
             if (db.schedules.length === 0) {
-                grid.innerHTML = `<div class="col-span-full bg-white p-8 rounded-2xl border border-gray-200 text-center text-gray-400">هیچ سانسی تعریف نشده است.</div>`;
+                grid.innerHTML = `<div class="col-span-full bg-white p-8 rounded-2xl border border-slate-200/80 text-center text-slate-400 text-xs">هیچ سانسی تعریف نشده است.</div>`;
                 return;
             }
             grid.innerHTML = db.schedules.map(sc => `
-                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
                     <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-gray-900">${sc.title}</h3>
-                        <button onclick="deleteSchedule(${sc.id})" class="text-red-500 hover:text-red-700 text-xs">حذف</button>
+                        <h3 class="font-bold text-slate-800 text-sm">${sc.title}</h3>
+                        <button onclick="deleteSchedule(${sc.id})" class="text-rose-500 hover:text-rose-700 text-xs">حذف</button>
                     </div>
-                    <p class="text-xs text-gray-500">مربی: <span class="font-medium text-gray-700">${sc.coach}</span></p>
-                    <p class="text-xs text-gray-500">زمان: <span class="font-medium text-gray-700">${sc.time}</span></p>
-                    <div class="pt-2 border-t border-gray-100 flex justify-between items-center text-xs">
-                        <span class="text-gray-400">شهریه دوره:</span>
+                    <p class="text-xs text-slate-400">مربی: <span class="font-medium text-slate-700">${sc.coach}</span></p>
+                    <p class="text-xs text-slate-400">زمان: <span class="font-medium text-slate-700">${sc.time}</span></p>
+                    <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                        <span class="text-slate-400">شهریه:</span>
                         <span class="font-bold text-indigo-600">${Number(sc.price).toLocaleString()} تومان</span>
                     </div>
                 </div>
@@ -599,7 +582,6 @@
             renderSchedules();
         }
 
-        // بخش ورزشکاران
         function openAddAthleteModal() {
             const select = document.getElementById('athlete-schedule');
             select.innerHTML = db.schedules.map(sc => `<option value="${sc.title}">${sc.title} (${Number(sc.price).toLocaleString()} تومان)</option>`).join('');
@@ -614,17 +596,14 @@
             const athleteName = document.getElementById('athlete-name').value;
             const today = new Date().toLocaleDateString('fa-IR');
 
-            const newAthlete = {
+            db.athletes.push({
                 id: Date.now(),
                 name: athleteName,
                 phone: document.getElementById('athlete-phone').value,
                 schedule: schedTitle,
                 status: 'تسویه شده'
-            };
+            });
 
-            db.athletes.push(newAthlete);
-
-            // ثبت خودکار پرداخت در بخش مالی
             db.payments.push({
                 id: Date.now(),
                 athlete: athleteName,
@@ -642,16 +621,16 @@
         function renderAthletes() {
             const tbody = document.getElementById('athletes-table-body');
             if (db.athletes.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400">هیچ ورزشکاری ثبت‌نام نشده است.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">هیچ ورزشکاری ثبت‌نام نشده است.</td></tr>`;
                 return;
             }
             tbody.innerHTML = db.athletes.map(a => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="p-4 font-semibold">${a.name}</td>
-                    <td class="p-4 text-gray-500">${a.phone}</td>
-                    <td class="p-4 text-gray-600">${a.schedule}</td>
-                    <td class="p-4"><span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg text-xs font-medium">${a.status}</span></td>
-                    <td class="p-4"><button onclick="deleteAthlete(${a.id})" class="text-red-500 hover:text-red-700 text-xs font-medium">حذف</button></td>
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-4 font-semibold text-slate-800">${a.name}</td>
+                    <td class="p-4 text-slate-500">${a.phone}</td>
+                    <td class="p-4 text-slate-600">${a.schedule}</td>
+                    <td class="p-4"><span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-xl text-xs font-medium">${a.status}</span></td>
+                    <td class="p-4"><button onclick="deleteAthlete(${a.id})" class="text-rose-500 hover:text-rose-700 text-xs font-medium">حذف</button></td>
                 </tr>
             `).join('');
         }
@@ -661,19 +640,18 @@
             renderAthletes();
         }
 
-        // بخش مالی و صدور قبض
         function renderPayments() {
             const tbody = document.getElementById('payments-table-body');
             if (db.payments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400">تراکنشی ثبت نشده است.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">تراکنشی ثبت نشده است.</td></tr>`;
                 return;
             }
             tbody.innerHTML = db.payments.map(p => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="p-4 font-semibold">${p.athlete}</td>
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-4 font-semibold text-slate-800">${p.athlete}</td>
                     <td class="p-4 text-indigo-600 font-bold">${Number(p.amount).toLocaleString()} تومان</td>
-                    <td class="p-4 text-gray-500">${p.date}</td>
-                    <td class="p-4"><span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg text-xs font-medium">${p.status}</span></td>
+                    <td class="p-4 text-slate-500">${p.date}</td>
+                    <td class="p-4"><span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-xl text-xs font-medium">${p.status}</span></td>
                     <td class="p-4"><button onclick="showReceipt('${p.athlete}', '${p.amount}', '${p.date}')" class="text-indigo-600 hover:text-indigo-800 text-xs font-medium">چاپ قبض</button></td>
                 </tr>
             `).join('');
@@ -688,7 +666,6 @@
             document.getElementById('modal-receipt').classList.remove('hidden');
         }
 
-        // بخش مدیریت کاربران
         function openAddUserModal() { document.getElementById('modal-user').classList.remove('hidden'); }
         function saveUser(e) {
             e.preventDefault();
@@ -704,10 +681,10 @@
         function renderUsers() {
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = db.users.map(u => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="p-4 font-semibold">${u.username}</td>
-                    <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg text-xs font-medium">${u.role}</span></td>
-                    <td class="p-4">${u.username !== 'admin' ? `<button onclick="deleteUser('${u.username}')" class="text-red-500 hover:text-red-700 text-xs font-medium">حذف</button>` : '<span class="text-gray-400 text-xs">غیرقابل حذف</span>'}</td>
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-4 font-semibold text-slate-800">${u.username}</td>
+                    <td class="p-4"><span class="bg-sky-50 text-sky-700 px-2.5 py-1 rounded-xl text-xs font-medium">${u.role}</span></td>
+                    <td class="p-4">${u.username !== 'admin' ? `<button onclick="deleteUser('${u.username}')" class="text-rose-500 hover:text-rose-700 text-xs font-medium">حذف</button>` : '<span class="text-slate-300 text-xs">غیرقابل حذف</span>'}</td>
                 </tr>
             `).join('');
         }
