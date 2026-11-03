@@ -1,0 +1,2525 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فیت‌پنل | سیستم جامع مدیریت باشگاه ورزشی</title>
+    <!-- فونت فارسی وزیرمتن -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- آیکون‌های Phosphor -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* اسکرول‌بار مینیمال */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+        /* انیمیشن‌های نرم */
+        .fade-in {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-receipt, #printable-receipt * {
+                visibility: visible;
+            }
+            #printable-receipt {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none !important;
+                border: 1px solid #000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-emerald-500 selection:text-white transition-colors duration-200">
+
+    <!-- کانتینر اصلی برنامه -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- بک‌دراپ منوی موبایل -->
+        <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden"></div>
+
+        <!-- سایدبار (منوی کناری) -->
+        <aside id="sidebar" class="fixed inset-y-0 right-0 z-40 w-64 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col justify-between transition-transform duration-300 translate-x-full lg:translate-x-0 lg:static lg:inset-0 shrink-0">
+            <!-- لوگو و عنوان باشگاه -->
+            <div>
+                <div class="h-16 px-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm shadow-emerald-600/20">
+                            <i class="ph-bold ph-barbell text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-base tracking-tight text-slate-900 dark:text-white leading-none">فیت‌پنل</h1>
+                            <span class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">مدیریت هوشمند باشگاه</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+                        <i class="ph ph-x text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- آیتم‌های منو -->
+                <nav class="p-3 space-y-1" id="sidebar-nav">
+                    <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-squares-four text-lg"></i>
+                            <span>داشبورد و حضور غیاب</span>
+                        </div>
+                    </button>
+
+                    <button onclick="switchTab('sports')" data-tab="sports" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-trophy text-lg"></i>
+                            <span>رشته‌های ورزشی</span>
+                        </div>
+                        <span id="nav-badge-sports" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">0</span>
+                    </button>
+
+                    <button onclick="switchTab('coaches')" data-tab="coaches" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-whistle text-lg"></i>
+                            <span>مربیان و قراردادها</span>
+                        </div>
+                        <span id="nav-badge-coaches" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">0</span>
+                    </button>
+
+                    <button onclick="switchTab('sessions')" data-tab="sessions" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-clock-countdown text-lg"></i>
+                            <span>سانس‌ها و ظرفیت</span>
+                        </div>
+                        <span id="nav-badge-sessions" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">0</span>
+                    </button>
+
+                    <button onclick="switchTab('members')" data-tab="members" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-users-three text-lg"></i>
+                            <span>ورزشکاران و ثبت‌نام</span>
+                        </div>
+                        <span id="nav-badge-members" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">0</span>
+                    </button>
+
+                    <button onclick="switchTab('finance')" data-tab="finance" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-wallet text-lg"></i>
+                            <span>امور مالی و شهریه‌ها</span>
+                        </div>
+                        <span id="nav-badge-debtors" class="hidden text-xs px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 font-semibold">0</span>
+                    </button>
+
+                    <button onclick="switchTab('schedule')" data-tab="schedule" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-calendar-check text-lg"></i>
+                            <span>برنامه هفتگی کل</span>
+                        </div>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- فوتر سایدبار: وضعیت همگام‌سازی و ریست داده -->
+            <div class="p-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50">
+                    <div class="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400 mb-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>همگام‌سازی خودکار فعال</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                        تمامی تغییرات در مرورگر شما ذخیره شده و بین بخش‌ها سینک هستند.
+                    </p>
+                </div>
+                <button onclick="confirmResetDemoData()" class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-400 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 border border-slate-200 dark:border-slate-800 transition-colors">
+                    <i class="ph ph-arrow-counter-clockwise text-sm"></i>
+                    <span>بازنشانی به داده‌های نمونه</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- بخش اصلی محتوا -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- هدر بالایی -->
+            <header class="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i class="ph ph-list text-xl"></i>
+                    </button>
+                    <div>
+                        <h2 id="page-title" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">داشبورد مدیریتی</h2>
+                        <p id="page-subtitle" class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">نمای کلی وضعیت باشگاه، ظرفیت سانس‌ها و حضور و غیاب</p>
+                    </div>
+                </div>
+
+                <!-- اکشن‌های سریع هدر -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">
+                        <i class="ph ph-calendar-blank text-emerald-600 dark:text-emerald-400 text-sm"></i>
+                        <span id="current-persian-date">امروز</span>
+                    </div>
+
+                    <button onclick="openMemberModal()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors">
+                        <i class="ph-bold ph-user-plus text-sm"></i>
+                        <span class="hidden sm:inline">ثبت‌نام ورزشکار</span>
+                    </button>
+
+                    <button onclick="openPaymentModal()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 text-white text-xs font-semibold transition-colors">
+                        <i class="ph-bold ph-credit-card text-sm"></i>
+                        <span class="hidden sm:inline">ثبت شهریه</span>
+                    </button>
+
+                    <button onclick="toggleTheme()" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="تغییر تم روشن/تاریک">
+                        <i id="theme-icon" class="ph ph-moon text-lg"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- فضای اسکرول محتوای صفحات -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+
+                <!-- ========================================== -->
+                <!-- ۱. بخش داشبورد (DASHBOARD) -->
+                <!-- ========================================== -->
+                <section id="tab-dashboard" class="tab-content space-y-6 fade-in">
+                    <!-- کارت‌های شاخص کلیدی (KPIs) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <!-- کارت ۱: ورزشکاران فعال -->
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex items-start justify-between">
+                            <div>
+                                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">ورزشکاران فعال</span>
+                                <div class="mt-2 flex items-baseline gap-2">
+                                    <h3 id="kpi-active-members" class="text-2xl font-bold text-slate-900 dark:text-white">0</h3>
+                                    <span id="kpi-total-members" class="text-xs text-slate-400">از 0 پرونده</span>
+                                </div>
+                                <p class="mt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                                    <i class="ph-fill ph-check-circle"></i>
+                                    <span>متصل به سانس‌های فعال</span>
+                                </p>
+                            </div>
+                            <div class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl">
+                                <i class="ph-duotone ph-users-three"></i>
+                            </div>
+                        </div>
+
+                        <!-- کارت ۲: درآمد دریافتی ماه -->
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex items-start justify-between">
+                            <div>
+                                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">مجموع شهریه دریافتی</span>
+                                <div class="mt-2 flex items-baseline gap-1.5">
+                                    <h3 id="kpi-total-revenue" class="text-2xl font-bold text-slate-900 dark:text-white">0</h3>
+                                    <span class="text-xs text-slate-400">تومان</span>
+                                </div>
+                                <p id="kpi-club-net-share" class="mt-2 text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">
+                                    سهم خالص باشگاه: ۰ تومان
+                                </p>
+                            </div>
+                            <div class="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl">
+                                <i class="ph-duotone ph-chart-line-up"></i>
+                            </div>
+                        </div>
+
+                        <!-- کارت ۳: سانس‌ها و رشته‌ها -->
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex items-start justify-between">
+                            <div>
+                                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">سانس‌های دایر باشگاه</span>
+                                <div class="mt-2 flex items-baseline gap-2">
+                                    <h3 id="kpi-active-sessions" class="text-2xl font-bold text-slate-900 dark:text-white">0</h3>
+                                    <span id="kpi-occupancy-rate" class="text-xs text-slate-400">0% تکمیل ظرفیت</span>
+                                </div>
+                                <p id="kpi-sports-coaches-summary" class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                                    ۰ رشته ورزشی • ۰ مربی رسمی
+                                </p>
+                            </div>
+                            <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl">
+                                <i class="ph-duotone ph-calendar-check"></i>
+                            </div>
+                        </div>
+
+                        <!-- کارت ۴: بدهکاران شهریه / نیاز به تمدید -->
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex items-start justify-between">
+                            <div>
+                                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">بدهکاران شهریه / منقضی</span>
+                                <div class="mt-2 flex items-baseline gap-2">
+                                    <h3 id="kpi-debtors-count" class="text-2xl font-bold text-rose-600 dark:text-rose-400">0</h3>
+                                    <span class="text-xs text-slate-400">ورزشکار</span>
+                                </div>
+                                <button onclick="switchTab('members'); setMemberFilter('unpaid');" class="mt-2 text-[11px] text-rose-600 dark:text-rose-400 hover:underline font-medium flex items-center gap-1">
+                                    <span>مشاهده و تسویه حساب</span>
+                                    <i class="ph ph-arrow-left"></i>
+                                </button>
+                            </div>
+                            <div class="w-11 h-11 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xl">
+                                <i class="ph-duotone ph-warning-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ردیف دوم داشبورد: ثبت حضور و غیاب سریع + وضعیت ظرفیت سانس‌ها -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        
+                        <!-- ویجت ثبت حضور و غیاب سریع (۵ ستون) -->
+                        <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                            <i class="ph-fill ph-fingerprint text-emerald-500 text-lg"></i>
+                                            <span>ثبت تردد و حضور سریع ورزشکار</span>
+                                        </h3>
+                                        <p class="text-xs text-slate-400 mt-0.5">جستجو با نام، کد عضویت یا شماره تماس</p>
+                                    </div>
+                                    <span id="today-checkin-count" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                                        0 تردد اخیر
+                                    </span>
+                                </div>
+
+                                <!-- باکس جستجوی سریع حضور -->
+                                <div class="relative mb-4">
+                                    <i class="ph ph-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                    <input type="text" id="quick-checkin-search" oninput="renderQuickCheckinList()" placeholder="نام ورزشکار یا کد عضویت (مثلاً 101)..." class="w-full pr-10 pl-4 py-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
+                                </div>
+
+                                <!-- لیست نتایج برای ثبت حضور -->
+                                <div id="quick-checkin-results" class="space-y-2 max-h-60 overflow-y-auto pr-0.5">
+                                    <!-- توسط جاوااسکریپت پر می‌شود -->
+                                </div>
+                            </div>
+
+                            <!-- لاگ آخرین ورودها -->
+                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                <span class="text-[11px] font-semibold text-slate-400 block mb-2">آخرین ترددهای ثبت‌شده:</span>
+                                <div id="recent-checkins-log" class="flex flex-wrap gap-1.5">
+                                    <!-- تگ‌های آخرین تردد -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- وضعیت زنده ظرفیت سانس‌ها (۷ ستون) -->
+                        <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                        <i class="ph-fill ph-users-four text-indigo-500 text-lg"></i>
+                                        <span>وضعیت ظرفیت سانس‌های فعال</span>
+                                    </h3>
+                                    <p class="text-xs text-slate-400 mt-0.5">نسبت ورزشکاران ثبت‌نامی به ظرفیت مجاز هر سانس</p>
+                                </div>
+                                <button onclick="switchTab('sessions')" class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
+                                    <span>مدیریت سانس‌ها</span>
+                                    <i class="ph ph-caret-left"></i>
+                                </button>
+                            </div>
+
+                            <div id="dashboard-sessions-list" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                                <!-- توسط جاوااسکریپت پر می‌شود -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ردیف سوم داشبورد: آخرین پرداخت‌های شهریه + تفکیک رشته‌ها -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-sm text-slate-900 dark:text-white">آخرین تراکنش‌ها و شهریه‌های دریافتی</h3>
+                                <button onclick="switchTab('finance')" class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline">مشاهده همه</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-xs">
+                                    <thead>
+                                        <tr class="border-b border-slate-100 dark:border-slate-800 text-slate-400 font-medium">
+                                            <th class="pb-2.5">ورزشکار</th>
+                                            <th class="pb-2.5">رشته / سانس</th>
+                                            <th class="pb-2.5">مبلغ (تومان)</th>
+                                            <th class="pb-2.5">روش</th>
+                                            <th class="pb-2.5 text-left">رسید</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboard-recent-payments" class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                                        <!-- توسط جاوااسکریپت پر می‌شود -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-sm text-slate-900 dark:text-white">عملکرد رشته‌های ورزشی</h3>
+                                <button onclick="switchTab('sports')" class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline">ویرایش رشته‌ها</button>
+                            </div>
+                            <div id="dashboard-sports-breakdown" class="space-y-3">
+                                <!-- توسط جاوااسکریپت پر می‌شود -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- ۲. بخش مدیریت رشته‌های ورزشی (SPORTS) -->
+                <!-- ========================================== -->
+                <section id="tab-sports" class="tab-content hidden space-y-6 fade-in">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                        <div>
+                            <h3 class="font-bold text-base text-slate-900 dark:text-white">رشته‌های ورزشی باشگاه</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">تعریف رشته‌ها، شهریه پایه ماهانه و تعداد جلسات استاندارد هر دوره</p>
+                        </div>
+                        <button onclick="openSportModal()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors">
+                            <i class="ph-bold ph-plus text-sm"></i>
+                            <span>افزودن رشته ورزشی جدید</span>
+                        </button>
+                    </div>
+
+                    <div id="sports-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <!-- کارت‌های رشته‌های ورزشی توسط JS -->
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- ۳. بخش مدیریت مربیان (COACHES) -->
+                <!-- ========================================== -->
+                <section id="tab-coaches" class="tab-content hidden space-y-6 fade-in">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                        <div>
+                            <h3 class="font-bold text-base text-slate-900 dark:text-white">کادر مربیان و درصد قرارداد</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">مدیریت مربیان، تخصص، سانس‌های تحت پوشش و محاسبه خودکار پورسانت از شهریه‌های دریافتی</p>
+                        </div>
+                        <button onclick="openCoachModal()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors">
+                            <i class="ph-bold ph-user-plus text-sm"></i>
+                            <span>افزودن مربی جدید</span>
+                        </button>
+                    </div>
+
+                    <div id="coaches-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <!-- کارت‌های مربیان توسط JS -->
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- ۴. بخش مدیریت سانس‌ها و کلاس‌ها (SESSIONS) -->
+                <!-- ========================================== -->
+                <section id="tab-sessions" class="tab-content hidden space-y-6 fade-in">
+                    <!-- نوار ابزار و فیلتر سانس‌ها -->
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white">مدیریت سانس‌ها و زمان‌بندی کلاس‌ها</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">هر سانس یک رشته ورزشی، یک مربی، روز و ساعت مشخص و ظرفیت مجاز را به هم متصل می‌کند</p>
+                            </div>
+                            <button onclick="openSessionModal()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors shrink-0">
+                                <i class="ph-bold ph-calendar-plus text-sm"></i>
+                                <span>تعریف سانس جدید</span>
+                            </button>
+                        </div>
+
+                        <!-- فیلترها -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">فیلتر بر اساس رشته:</label>
+                                <select id="filter-session-sport" onchange="renderSessions()" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                                    <option value="all">همه رشته‌های ورزشی</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">فیلتر بر اساس مربی:</label>
+                                <select id="filter-session-coach" onchange="renderSessions()" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                                    <option value="all">همه مربیان</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">بخش (جنسیت):</label>
+                                <select id="filter-session-gender" onchange="renderSessions()" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                                    <option value="all">آقایان و بانوان</option>
+                                    <option value="آقایان">سانس آقایان</option>
+                                    <option value="بانوان">سانس بانوان</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- لیست کارت‌های سانس -->
+                    <div id="sessions-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <!-- توسط JS پر می‌شود -->
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- ۵. بخش مدیریت اعضا و ورزشکاران (MEMBERS) -->
+                <!-- ========================================== -->
+                <section id="tab-members" class="tab-content hidden space-y-6 fade-in">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white">پرونده ورزشکاران و اعضای باشگاه</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">مدیریت ثبت‌نام، پیگیری جلسات باقی‌مانده، وضعیت شهریه و تمدید دوره</p>
+                            </div>
+                            <button onclick="openMemberModal()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors shrink-0">
+                                <i class="ph-bold ph-user-plus text-sm"></i>
+                                <span>ثبت‌نام ورزشکار جدید</span>
+                            </button>
+                        </div>
+
+                        <!-- جستجو و فیلتر اعضا -->
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <div class="sm:col-span-5 relative">
+                                <i class="ph ph-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="member-search-input" oninput="renderMembers()" placeholder="جستجوی نام، موبایل یا کد عضویت..." class="w-full pr-10 pl-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <div class="sm:col-span-4">
+                                <select id="filter-member-session" onchange="renderMembers()" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                                    <option value="all">همه سانس‌ها و رشته‌ها</option>
+                                </select>
+                            </div>
+                            <div class="sm:col-span-3">
+                                <select id="filter-member-status" onchange="renderMembers()" class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                                    <option value="all">همه وضعیت‌های مالی</option>
+                                    <option value="paid">تسویه شده (فعال)</option>
+                                    <option value="unpaid">بدهکار شهریه</option>
+                                    <option value="expired">اتمام جلسات دوره</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- جدول لیست ورزشکاران -->
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right text-xs">
+                                <thead>
+                                    <tr class="bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold">
+                                        <th class="py-3.5 px-4">کد / ورزشکار</th>
+                                        <th class="py-3.5 px-4">سانس و رشته</th>
+                                        <th class="py-3.5 px-4">مربی</th>
+                                        <th class="py-3.5 px-4">کارکرد جلسات</th>
+                                        <th class="py-3.5 px-4">وضعیت شهریه</th>
+                                        <th class="py-3.5 px-4 text-left">عملیات سریع</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="members-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <!-- توسط JS پر می‌شود -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- ۶. بخش مدیریت مالی و شهریه‌ها (FINANCE) -->
+                <!-- ========================================== -->
+                <section id="tab-finance" class="tab-content hidden space-y-6 fade-in">
+                    <!-- کارت‌های خلاصه مالی -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                            <span class="text-xs text-slate-500 dark:text-slate-400">کل دریافتی ثبت‌شده</span>
+                            <div class="mt-2 flex items-baseline gap-1">
+                                <span id="fin-total-income" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">0</span>
+                                <span class="text-xs text-slate-400">تومان</span>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                            <span class="text-xs text-slate-500 dark:text-slate-400">سهم خالص باشگاه</span>
+                            <div class="mt-2 flex items-baseline gap-1">
+                                <span id="fin-club-share" class="text-xl font-bold text-slate-900 dark:text-white">0</span>
+                                <span class="text-xs text-slate-400">تومان</span>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                            <span class="text-xs text-slate-500 dark:text-slate-400">سهم قابل پرداخت به مربیان</span>
+                            <div class="mt-2 flex items-baseline gap-1">
+                                <span id="fin-coaches-share" class="text-xl font-bold text-indigo-600 dark:text-indigo-400">0</span>
+                                <span class="text-xs text-slate-400">تومان</span>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                            <span class="text-xs text-slate-500 dark:text-slate-400">مطالبات معوق (بدهکاران)</span>
+                            <div class="mt-2 flex items-baseline gap-1">
+                                <span id="fin-unpaid-amount" class="text-xl font-bold text-rose-600 dark:text-rose-400">0</span>
+                                <span class="text-xs text-slate-400">تومان</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- جدول تراکنش‌های شهریه (۸ ستون) -->
+                        <div class="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div>
+                                    <h3 class="font-bold text-sm text-slate-900 dark:text-white">دفتر کل پرداخت‌های شهریه</h3>
+                                    <p class="text-xs text-slate-400 mt-0.5">لیست تمامی واریزی‌ها همراه با امکان صدور رسید دیجیتال</p>
+                                </div>
+                                <button onclick="openPaymentModal()" class="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors">
+                                    <i class="ph-bold ph-plus"></i>
+                                    <span>ثبت دریافت شهریه جدید</span>
+                                </button>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-xs">
+                                    <thead>
+                                        <tr class="border-b border-slate-200/80 dark:border-slate-800 text-slate-400 font-medium">
+                                            <th class="py-3 px-2">شماره قبض</th>
+                                            <th class="py-3 px-2">ورزشکار</th>
+                                            <th class="py-3 px-2">رشته و سانس</th>
+                                            <th class="py-3 px-2">مبلغ (تومان)</th>
+                                            <th class="py-3 px-2">روش پرداخت</th>
+                                            <th class="py-3 px-2">تاریخ</th>
+                                            <th class="py-3 px-2 text-left">عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="finance-payments-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                        <!-- توسط JS پر می‌شود -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ترازنامه تسویه حساب مربیان (۴ ستون) -->
+                        <div class="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 space-y-4">
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                    <i class="ph-fill ph-Percent text-indigo-500"></i>
+                                    <span>محاسبه خودکار سهم مربیان</span>
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">بر اساس درصد قرارداد و شهریه‌های وصول‌شده هر سانس</p>
+                            </div>
+                            <div id="finance-coach-settlements" class="space-y-3">
+                                <!-- توسط JS پر می‌شود -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- ۷. بخش برنامه هفتگی (WEEKLY SCHEDULE) -->
+                <!-- ========================================== -->
+                <section id="tab-schedule" class="tab-content hidden space-y-6 fade-in">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold text-base text-slate-900 dark:text-white">ماتریس برنامه هفتگی باشگاه</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">نمای تفکیکی سانس‌های روزهای زوج، روزهای فرد و همه‌روزه</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select id="schedule-gender-filter" onchange="renderWeeklySchedule()" class="px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none">
+                                <option value="all">نمایش همه (آقایان و بانوان)</option>
+                                <option value="آقایان">فقط سانس‌های آقایان</option>
+                                <option value="بانوان">فقط سانس‌های بانوان</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="schedule-matrix-container">
+                        <!-- ستون روزهای زوج، فرد و همه روزه توسط JS -->
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- مودال‌ها (پنجره‌های پاپ‌آپ) -->
+    <!-- ===================================================== -->
+
+    <!-- ۱. مودال افزودن/ویرایش رشته ورزشی -->
+    <div id="modal-sport" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden fade-in">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <h3 id="modal-sport-title" class="font-bold text-sm text-slate-900 dark:text-white">افزودن رشته ورزشی</h3>
+                <button onclick="closeModal('modal-sport')" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <form onsubmit="saveSport(event)" class="p-5 space-y-4 text-xs">
+                <input type="hidden" id="sport-id">
+                <div>
+                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">عنوان رشته ورزشی *</label>
+                    <input type="text" id="sport-name" required placeholder="مثلاً: بدنسازی و فیتنس" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">شهریه پایه ماهانه (تومان) *</label>
+                        <input type="number" id="sport-fee" required min="50000" step="50000" placeholder="950000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">تعداد جلسات در ماه *</label>
+                        <select id="sport-sessions-count" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <option value="12">۱۲ جلسه (۳ روز در هفته)</option>
+                            <option value="16">۱۶ جلسه (۴ روز در هفته)</option>
+                            <option value="26">۲۶ جلسه (همه روزه / آزاد)</option>
+                            <option value="8">۸ جلسه (۲ روز در هفته)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">رنگ معرف رشته</label>
+                    <select id="sport-color" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                        <option value="emerald">سبز زمردی (بدنسازی / فیتنس)</option>
+                        <option value="indigo">نیلی (کراس‌فیت / قدرتی)</option>
+                        <option value="amber">کهربایی (تی‌آرایکس / هوازی)</option>
+                        <option value="rose">سرخابی (رزمی / بوکس)</option>
+                        <option value="cyan">فیروزه‌ای (پیلاتس / اصلاحی)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">توضیحات کوتاه</label>
+                    <input type="text" id="sport-desc" placeholder="توضیحات تجهیزات یا شرایط کلاس..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-sport')" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">انصراف</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">ذخیره رشته</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ۲. مودال افزودن/ویرایش مربی -->
+    <div id="modal-coach" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden fade-in">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <h3 id="modal-coach-title" class="font-bold text-sm text-slate-900 dark:text-white">ثبت مربی جدید</h3>
+                <button onclick="closeModal('modal-coach')" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <form onsubmit="saveCoach(event)" class="p-5 space-y-4 text-xs">
+                <input type="hidden" id="coach-id">
+                <div>
+                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">نام و نام خانوادگی مربی *</label>
+                    <input type="text" id="coach-name" required placeholder="مثلاً: استاد آرش کمالی" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">تخصص اصلی (رشته) *</label>
+                        <select id="coach-sport" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <!-- توسط JS پر می‌شود -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">بخش فعالیت *</label>
+                        <select id="coach-gender" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <option value="آقایان">آقایان</option>
+                            <option value="بانوان">بانوان</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">شماره تماس *</label>
+                        <input type="text" id="coach-phone" required placeholder="0912..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">سهم قرارداد مربی (درصد) *</label>
+                        <input type="number" id="coach-share" required min="10" max="90" value="45" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-coach')" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">انصراف</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">ذخیره اطلاعات مربی</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ۳. مودال افزودن/ویرایش سانس -->
+    <div id="modal-session" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden fade-in">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <h3 id="modal-session-title" class="font-bold text-sm text-slate-900 dark:text-white">تعریف سانس و کلاس جدید</h3>
+                <button onclick="closeModal('modal-session')" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <form onsubmit="saveSession(event)" class="p-5 space-y-4 text-xs">
+                <input type="hidden" id="session-id">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">انتخاب رشته ورزشی *</label>
+                        <select id="session-sport" required onchange="onSessionSportChange()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <!-- توسط JS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">انتخاب مربی سانس *</label>
+                        <select id="session-coach" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <!-- توسط JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">عنوان سانس (اختیاری - در صورت خالی بودن خودکار ساخته می‌شود)</label>
+                    <input type="text" id="session-title" placeholder="مثلاً: کراس‌فیت پیشرفته عصر" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">روزهای برگزاری *</label>
+                        <select id="session-days" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <option value="روزهای زوج">روزهای زوج (ش، د، چ)</option>
+                            <option value="روزهای فرد">روزهای فرد (ی، س، پ)</option>
+                            <option value="همه روزه">همه روزه (شنبه تا پنجشنبه)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">بازه زمانی *</label>
+                        <select id="session-time" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <option value="۰۸:۰۰ تا ۱۰:۰۰">۰۸:۰۰ تا ۱۰:۰۰ (صبح)</option>
+                            <option value="۱۰:۰۰ تا ۱۲:۰۰">۱۰:۰۰ تا ۱۲:۰۰ (صبح)</option>
+                            <option value="۱۴:۰۰ تا ۱۶:۰۰">۱۴:۰۰ تا ۱۶:۰۰ (ظهر)</option>
+                            <option value="۱۶:۰۰ تا ۱۸:۰۰">۱۶:۰۰ تا ۱۸:۰۰ (عصر)</option>
+                            <option value="۱۸:۰۰ تا ۲۰:۰۰" selected>۱۸:۰۰ تا ۲۰:۰۰ (عصر)</option>
+                            <option value="۲۰:۰۰ تا ۲۲:۰۰">۲۰:۰۰ تا ۲۲:۰۰ (شب)</option>
+                            <option value="۲۲:۰۰ تا ۲۳:۳۰">۲۲:۰۰ تا ۲۳:۳۰ (شب)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">ویژه بخش *</label>
+                        <select id="session-gender" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <option value="آقایان">آقایان</option>
+                            <option value="بانوان">بانوان</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">ظرفیت مجاز سانس (نفر) *</label>
+                        <input type="number" id="session-capacity" required min="5" max="200" value="25" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">شهریه این سانس (تومان) *</label>
+                        <input type="number" id="session-fee" required min="50000" step="50000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-session')" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">انصراف</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">ذخیره سانس</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ۴. مودال ثبت‌نام / ویرایش ورزشکار -->
+    <div id="modal-member" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden fade-in">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <h3 id="modal-member-title" class="font-bold text-sm text-slate-900 dark:text-white">ثبت‌نام ورزشکار جدید</h3>
+                <button onclick="closeModal('modal-member')" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <form onsubmit="saveMember(event)" class="p-5 space-y-4 text-xs">
+                <input type="hidden" id="member-id">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">نام و نام خانوادگی ورزشکار *</label>
+                        <input type="text" id="member-name" required placeholder="مثلاً: سینا رادمنش" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">شماره موبایل *</label>
+                        <input type="text" id="member-phone" required placeholder="0912..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">انتخاب سانس و کلاس ورزشی *</label>
+                    <select id="member-session" required onchange="onMemberSessionSelect()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                        <!-- توسط JS پر می‌شود -->
+                    </select>
+                </div>
+
+                <!-- باکس پیش‌نمایش خودکار اطلاعات سانس انتخاب شده -->
+                <div id="member-session-preview" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between">
+                    <div>
+                        <span id="preview-sport-coach" class="font-semibold text-slate-800 dark:text-slate-200 block">رشته و مربی</span>
+                        <span id="preview-days-time" class="text-[11px] text-slate-500 dark:text-slate-400">زمان سانس</span>
+                    </div>
+                    <div class="text-left">
+                        <span id="preview-session-fee" class="font-bold text-emerald-600 dark:text-emerald-400 text-sm block">0 تومان</span>
+                        <span id="preview-total-sessions" class="text-[11px] text-slate-400">۱۲ جلسه</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="member-initial-payment-row">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">وضعیت پرداخت شهریه در زمان ثبت‌نام</label>
+                        <select id="member-payment-status" onchange="toggleInitialPaymentMethod()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <option value="paid">پرداخت کامل شهریه (ثبت خودکار در مالی)</option>
+                            <option value="unpaid">بدهکار (پرداخت در آینده)</option>
+                        </select>
+                    </div>
+                    <div id="member-payment-method-box">
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">روش دریافت وجه</label>
+                        <select id="member-payment-method" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <option value="کارتخوان (POS)">کارتخوان (POS)</option>
+                            <option value="کارت به کارت">کارت به کارت</option>
+                            <option value="نقدی">نقدی</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-member')" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">انصراف</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">تکمیل ثبت‌نام</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ۵. مودال ثبت پرداخت شهریه / تمدید دوره -->
+    <div id="modal-payment" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden fade-in">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">ثبت دریافت شهریه / تمدید دوره</h3>
+                <button onclick="closeModal('modal-payment')" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <form onsubmit="savePayment(event)" class="p-5 space-y-4 text-xs">
+                <div>
+                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">انتخاب ورزشکار *</label>
+                    <select id="payment-member" required onchange="onPaymentMemberChange()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                        <!-- توسط JS -->
+                    </select>
+                </div>
+
+                <div id="payment-member-info" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700 text-[11px] space-y-1">
+                    <!-- جزئیات سانس ورزشکار -->
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">مبلغ دریافتی (تومان) *</label>
+                        <input type="number" id="payment-amount" required min="10000" step="10000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500 font-bold text-emerald-600">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">روش پرداخت *</label>
+                        <select id="payment-method" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-emerald-500">
+                            <option value="کارتخوان (POS)">کارتخوان (POS)</option>
+                            <option value="کارت به کارت">کارت به کارت</option>
+                            <option value="نقدی">نقدی</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label class="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/50 cursor-pointer">
+                    <input type="checkbox" id="payment-reset-sessions" class="w-4 h-4 accent-emerald-600 rounded">
+                    <span class="text-slate-700 dark:text-slate-300 font-medium">شارژ مجدد جلسات دوره (صفر کردن جلسات مصرف‌شده برای ماه جدید)</span>
+                </label>
+
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-payment')" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">انصراف</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">ثبت پرداخت و صدور رسید</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ۶. مودال رسید دیجیتال پرداخت شهریه -->
+    <div id="modal-receipt" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden fade-in">
+            <div id="printable-receipt" class="p-6 space-y-5 bg-white text-slate-900">
+                <div class="text-center border-b border-dashed border-slate-200 pb-4">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center mx-auto mb-2">
+                        <i class="ph-bold ph-barbell text-xl"></i>
+                    </div>
+                    <h4 class="font-bold text-base">رسید پرداخت شهریه باشگاه</h4>
+                    <p id="receipt-code" class="text-xs text-slate-400 mt-0.5">شماره قبض: #1001</p>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">نام ورزشکار:</span>
+                        <span id="receipt-member" class="font-bold">--</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">رشته ورزشی:</span>
+                        <span id="receipt-sport" class="font-semibold">--</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">سانس و مربی:</span>
+                        <span id="receipt-session" class="font-medium">--</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">روش پرداخت:</span>
+                        <span id="receipt-method" class="font-medium">--</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">تاریخ ثبت:</span>
+                        <span id="receipt-date" class="font-medium">--</span>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                    <span class="text-xs font-semibold text-emerald-800">مبلغ پرداخت‌شده:</span>
+                    <span id="receipt-amount" class="text-base font-bold text-emerald-700">0 تومان</span>
+                </div>
+            </div>
+
+            <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <button onclick="window.print()" class="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-emerald-600">
+                    <i class="ph ph-printer text-base"></i>
+                    <span>چاپ قبض</span>
+                </button>
+                <button onclick="closeModal('modal-receipt')" class="px-4 py-1.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold">بستن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ۷. مودال مشاهده لیست ورزشکاران یک سانس -->
+    <div id="modal-session-members" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden fade-in">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                    <h3 id="modal-session-members-title" class="font-bold text-sm text-slate-900 dark:text-white">لیست ورزشکاران سانس</h3>
+                    <p id="modal-session-members-subtitle" class="text-[11px] text-slate-400 mt-0.5"></p>
+                </div>
+                <button onclick="closeModal('modal-session-members')" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <div id="modal-session-members-list" class="p-5 max-h-96 overflow-y-auto space-y-2.5 text-xs">
+                <!-- توسط JS -->
+            </div>
+            <div class="px-5 py-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <button id="btn-add-member-to-this-session" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <i class="ph-bold ph-user-plus"></i>
+                    <span>ثبت‌نام عضو جدید در این سانس</span>
+                </button>
+                <button onclick="closeModal('modal-session-members')" class="px-4 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">بستن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ۸. مودال تایید عملیات (حذف یا ریست بدون استفاده از confirm مرورگر) -->
+    <div id="modal-confirm" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-5 text-center space-y-4 fade-in">
+            <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto text-2xl">
+                <i class="ph-duotone ph-warning"></i>
+            </div>
+            <div>
+                <h4 id="confirm-title" class="font-bold text-sm text-slate-900 dark:text-white">آیا اطمینان دارید؟</h4>
+                <p id="confirm-message" class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed"></p>
+            </div>
+            <div class="flex items-center justify-center gap-2 pt-2">
+                <button onclick="closeModal('modal-confirm')" class="flex-1 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300">انصراف</button>
+                <button id="confirm-action-btn" class="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">بله، انجام شود</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- کانتینر نوتیفیکیشن (Toast) -->
+    <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ===================================================== -->
+    <!-- منطق جاوااسکریپت و مدیریت یکپارچه وضعیت (STATE) -->
+    <!-- ===================================================== -->
+    <script>
+        const STORAGE_KEY = 'fitpanel_gym_state_v1';
+        let currentTab = 'dashboard';
+
+        // داده‌های نمونه اولیه برای تجربه کاربری کامل و واقعی
+        const defaultDemoState = {
+            sports: [
+                { id: 'sp1', name: 'بدنسازی و فیتنس', fee: 1200000, sessionsPerMonth: 16, color: 'emerald', desc: 'استفاده از سالن وزنه و هوازی با برنامه تمرینی' },
+                { id: 'sp2', name: 'کراس‌فیت (CrossFit)', fee: 1450000, sessionsPerMonth: 12, color: 'indigo', desc: 'تمرینات عملکردی پرفشار گروهی و استقامتی' },
+                { id: 'sp3', name: 'تی‌آرایکس (TRX)', fee: 1100000, sessionsPerMonth: 12, color: 'amber', desc: 'تمرینات معلق با وزن بدن و تقویت میان‌تنه' },
+                { id: 'sp4', name: 'بوکس و کیک‌بوکسینگ', fee: 1300000, sessionsPerMonth: 12, color: 'rose', desc: 'آموزش تکنیک‌های رزمی، کیسه و آمادگی جسمانی' },
+                { id: 'sp5', name: 'پیلاتس و حرکات اصلاحی', fee: 980000, sessionsPerMonth: 12, color: 'cyan', desc: 'انعطاف‌پذیری، اصلاح ناهنجاری‌های اسکلتی و تنفس' }
+            ],
+            coaches: [
+                { id: 'co1', name: 'آرش کمالی', sportId: 'sp1', gender: 'آقایان', phone: '09123456781', sharePercent: 45 },
+                { id: 'co2', name: 'مهسا تهرانی', sportId: 'sp3', gender: 'بانوان', phone: '09124458890', sharePercent: 50 },
+                { id: 'co3', name: 'سهراب رحیمی', sportId: 'sp2', gender: 'آقایان', phone: '09121112233', sharePercent: 45 },
+                { id: 'co4', name: 'نگین فرهمند', sportId: 'sp5', gender: 'بانوان', phone: '09352223344', sharePercent: 40 },
+                { id: 'co5', name: 'کامران زند', sportId: 'sp4', gender: 'آقایان', phone: '09129988776', sharePercent: 50 }
+            ],
+            sessions: [
+                { id: 'se1', title: 'بدنسازی عمومی عصر', sportId: 'sp1', coachId: 'co1', days: 'روزهای زوج', time: '۱۸:۰۰ تا ۲۰:۰۰', gender: 'آقایان', capacity: 30, fee: 1200000 },
+                { id: 'se2', title: 'کراس‌فیت نیمه‌خصوصی شب', sportId: 'sp2', coachId: 'co3', days: 'روزهای زوج', time: '۲۰:۰۰ تا ۲۲:۰۰', gender: 'آقایان', capacity: 18, fee: 1450000 },
+                { id: 'se3', title: 'تی‌آرایکس چربی‌سوزی صبح', sportId: 'sp3', coachId: 'co2', days: 'روزهای زوج', time: '۱۰:۰۰ تا ۱۲:۰۰', gender: 'بانوان', capacity: 15, fee: 1100000 },
+                { id: 'se4', title: 'پیلاتس و اصلاحی عصر', sportId: 'sp5', coachId: 'co4', days: 'روزهای فرد', time: '۱۶:۰۰ تا ۱۸:۰۰', gender: 'بانوان', capacity: 20, fee: 980000 },
+                { id: 'se5', title: 'بوکس حرفه‌ای شب', sportId: 'sp4', coachId: 'co5', days: 'روزهای فرد', time: '۲۰:۰۰ تا ۲۲:۰۰', gender: 'آقایان', capacity: 16, fee: 1300000 },
+                { id: 'se6', title: 'بدنسازی VIP همه روزه', sportId: 'sp1', coachId: 'co1', days: 'همه روزه', time: '۱۶:۰۰ تا ۱۸:۰۰', gender: 'آقایان', capacity: 25, fee: 1650000 }
+            ],
+            members: [
+                { id: 'm1', code: '101', name: 'امیرحسین رضایی', phone: '09121001001', sessionId: 'se1', attended: 7, maxSessions: 16, paymentStatus: 'paid', joinDate: '۱۴۰۵/۰۸/۰۱' },
+                { id: 'm2', code: '102', name: 'سارا محمدی', phone: '09121001002', sessionId: 'se3', attended: 9, maxSessions: 12, paymentStatus: 'paid', joinDate: '۱۴۰۵/۰۸/۰۲' },
+                { id: 'm3', code: '103', name: 'پویا رستمی', phone: '09121001003', sessionId: 'se2', attended: 4, maxSessions: 12, paymentStatus: 'unpaid', joinDate: '۱۴۰۵/۰۸/۰۵' },
+                { id: 'm4', code: '104', name: 'الناز شاکری', phone: '09362002004', sessionId: 'se4', attended: 12, maxSessions: 12, paymentStatus: 'paid', joinDate: '۱۴۰۵/۰۷/۱۰' },
+                { id: 'm5', code: '105', name: 'کیارش نادری', phone: '09123003005', sessionId: 'se5', attended: 6, maxSessions: 12, paymentStatus: 'paid', joinDate: '۱۴۰۵/۰۸/۰۳' },
+                { id: 'm6', code: '106', name: 'نیما افشار', phone: '09124004006', sessionId: 'se1', attended: 11, maxSessions: 16, paymentStatus: 'paid', joinDate: '۱۴۰۵/۰۸/۰۱' },
+                { id: 'm7', code: '107', name: 'مریم کاظمی', phone: '09125005007', sessionId: 'se3', attended: 3, maxSessions: 12, paymentStatus: 'unpaid', joinDate: '۱۴۰۵/۰۸/۰۸' },
+                { id: 'm8', code: '108', name: 'فرزاد بهرامی', phone: '09126006008', sessionId: 'se6', attended: 14, maxSessions: 26, paymentStatus: 'paid', joinDate: '۱۴۰۵/۰۸/۰۱' }
+            ],
+            payments: [
+                { id: 'pay1', receiptNo: '1041', memberId: 'm1', sessionId: 'se1', amount: 1200000, method: 'کارتخوان (POS)', date: '۱۴۰۵/۰۸/۰۱ - ۱۸:۱۵' },
+                { id: 'pay2', receiptNo: '1042', memberId: 'm2', sessionId: 'se3', amount: 1100000, method: 'کارت به کارت', date: '۱۴۰۵/۰۸/۰۲ - ۱۰:۰۵' },
+                { id: 'pay3', receiptNo: '1043', memberId: 'm4', sessionId: 'se4', amount: 980000, method: 'کارتخوان (POS)', date: '۱۴۰۵/۰۷/۱۰ - ۱۶:۲۰' },
+                { id: 'pay4', receiptNo: '1044', memberId: 'm5', sessionId: 'se5', amount: 1300000, method: 'نقدی', date: '۱۴۰۵/۰۸/۰۳ - ۱۹:۵۰' },
+                { id: 'pay5', receiptNo: '1045', memberId: 'm6', sessionId: 'se1', amount: 1200000, method: 'کارتخوان (POS)', date: '۱۴۰۵/۰۸/۰۱ - ۱۸:۳۰' },
+                { id: 'pay6', receiptNo: '1046', memberId: 'm8', sessionId: 'se6', amount: 1650000, method: 'کارتخوان (POS)', date: '۱۴۰۵/۰۸/۰۱ - ۱۶:۱۰' }
+            ],
+            checkins: [
+                { name: 'امیرحسین رضایی', time: '۱۸:۰۵', sessionTitle: 'بدنسازی عمومی عصر' },
+                { name: 'فرزاد بهرامی', time: '۱۶:۱۲', sessionTitle: 'بدنسازی VIP همه روزه' }
+            ]
+        };
+
+        let state = loadState();
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('خطا در خواندن حافظه محلی:', e);
+            }
+            return JSON.parse(JSON.stringify(defaultDemoState));
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.error('خطا در ذخیره وضعیت:', e);
+            }
+            syncAllViews();
+        }
+
+        // توابع کمکی فرمت اعداد فارسی و تاریخ
+        function toFaNum(num) {
+            if (num === null || num === undefined) return '۰';
+            return Number(num).toLocaleString('fa-IR');
+        }
+
+        function getNowPersianString() {
+            try {
+                const now = new Date();
+                const dateStr = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+                const timeStr = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit', hour12: false }).format(now);
+                return `${dateStr} - ${timeStr}`;
+            } catch (e) {
+                return '۱۴۰۵/۰۸/۱۲ - ۱۸:۰۰';
+            }
+        }
+
+        function getTodayPersianHeader() {
+            try {
+                return new Intl.DateTimeFormat('fa-IR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+            } catch (e) {
+                return 'سه‌شنبه ۱۲ آبان ۱۴۰۵';
+            }
+        }
+
+        // پالت رنگی رشته‌ها
+        function getColorClasses(color) {
+            const map = {
+                emerald: {
+                    bg: 'bg-emerald-50 dark:bg-emerald-950/50',
+                    text: 'text-emerald-600 dark:text-emerald-400',
+                    border: 'border-emerald-200 dark:border-emerald-800/60',
+                    bar: 'bg-emerald-500'
+                },
+                indigo: {
+                    bg: 'bg-indigo-50 dark:bg-indigo-950/50',
+                    text: 'text-indigo-600 dark:text-indigo-400',
+                    border: 'border-indigo-200 dark:border-indigo-800/60',
+                    bar: 'bg-indigo-500'
+                },
+                amber: {
+                    bg: 'bg-amber-50 dark:bg-amber-950/50',
+                    text: 'text-amber-600 dark:text-amber-400',
+                    border: 'border-amber-200 dark:border-amber-800/60',
+                    bar: 'bg-amber-500'
+                },
+                rose: {
+                    bg: 'bg-rose-50 dark:bg-rose-950/50',
+                    text: 'text-rose-600 dark:text-rose-400',
+                    border: 'border-rose-200 dark:border-rose-800/60',
+                    bar: 'bg-rose-500'
+                },
+                cyan: {
+                    bg: 'bg-cyan-50 dark:bg-cyan-950/50',
+                    text: 'text-cyan-600 dark:text-cyan-400',
+                    border: 'border-cyan-200 dark:border-cyan-800/60',
+                    bar: 'bg-cyan-500'
+                }
+            };
+            return map[color] || map.emerald;
+        }
+
+        // توابع دریافت موجودیت‌های مرتبط (Getters)
+        function getSportById(id) {
+            return state.sports.find(s => s.id === id) || { name: 'نامشخص', fee: 0, sessionsPerMonth: 12, color: 'emerald' };
+        }
+        function getCoachById(id) {
+            return state.coaches.find(c => c.id === id) || { name: 'بدون مربی', sharePercent: 0 };
+        }
+        function getSessionById(id) {
+            return state.sessions.find(s => s.id === id) || null;
+        }
+        function getMemberById(id) {
+            return state.members.find(m => m.id === id) || null;
+        }
+
+        // نمایش نوتیفیکیشن (Toast)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const isError = type === 'error';
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-xs font-medium fade-in ${
+                isError 
+                ? 'bg-rose-600 text-white border-rose-500' 
+                : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-700 dark:border-slate-200'
+            }`;
+            toast.innerHTML = `
+                <i class="ph-fill ${isError ? 'ph-warning-octagon' : 'ph-check-circle text-emerald-400 dark:text-emerald-600'} text-base"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.25s ease';
+                setTimeout(() => toast.remove(), 250);
+            }, 3000);
+        }
+
+        // مدیریت مودال‌ها
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function showCustomConfirm(title, message, onConfirm) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            const btn = document.getElementById('confirm-action-btn');
+            btn.onclick = () => {
+                closeModal('modal-confirm');
+                onConfirm();
+            };
+            openModal('modal-confirm');
+        }
+
+        function confirmResetDemoData() {
+            showCustomConfirm(
+                'بازنشانی به داده‌های نمونه اولیه',
+                'تمامی تغییرات، ثبت‌نام‌ها و تراکنش‌های فعلی پاک شده و اطلاعات پیش‌فرض آزمایشی باشگاه بارگذاری می‌شود. ادامه می‌دهید؟',
+                () => {
+                    state = JSON.parse(JSON.stringify(defaultDemoState));
+                    saveState();
+                    showToast('اطلاعات پنل به حالت نمونه اولیه بازنشانی شد.');
+                }
+            );
+        }
+
+        // تغییر تب‌ها و منوی موبایل
+        const tabMeta = {
+            dashboard: { title: 'داشبورد مدیریتی', subtitle: 'نمای کلی وضعیت باشگاه، ظرفیت سانس‌ها و حضور و غیاب سریع' },
+            sports: { title: 'مدیریت رشته‌های ورزشی', subtitle: 'تعریف رشته‌ها، شهریه پایه و تعداد جلسات استاندارد ماهانه' },
+            coaches: { title: 'مدیریت مربیان و قراردادها', subtitle: 'کادر مربیان، درصد قرارداد و محاسبه خودکار سهم از شهریه‌ها' },
+            sessions: { title: 'مدیریت سانس‌ها و کلاس‌ها', subtitle: 'زمان‌بندی کلاس‌ها، اتصال رشته و مربی و کنترل ظرفیت' },
+            members: { title: 'ورزشکاران و ثبت‌نام', subtitle: 'پرونده اعضا، حضور و غیاب، وضعیت شهریه و تمدید دوره' },
+            finance: { title: 'امور مالی و شهریه‌ها', subtitle: 'دفتر کل دریافتی‌ها، صدور رسید و ترازنامه تسویه مربیان' },
+            schedule: { title: 'برنامه هفتگی کل باشگاه', subtitle: 'جدول مقایسه‌ای سانس‌های روزهای زوج، فرد و همه‌روزه' }
+        };
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`tab-${tabId}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.tab === tabId) {
+                    btn.className = 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 transition-all';
+                } else {
+                    btn.className = 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all';
+                }
+            });
+
+            if (tabMeta[tabId]) {
+                document.getElementById('page-title').textContent = tabMeta[tabId].title;
+                document.getElementById('page-subtitle').textContent = tabMeta[tabId].subtitle;
+            }
+
+            // بستن سایدبار موبایل در صورت باز بودن
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('translate-x-full')) {
+                toggleMobileSidebar();
+            }
+
+            syncAllViews();
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobile-sidebar-backdrop');
+            sidebar.classList.toggle('translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'ph ph-moon text-lg';
+            } else {
+                html.classList.add('dark');
+                icon.className = 'ph ph-sun text-lg';
+            }
+        }
+
+        // =====================================================
+        // همگام‌سازی سراسری تمام بخش‌ها (SYNC ALL VIEWS)
+        // =====================================================
+        function syncAllViews() {
+            updateSidebarBadges();
+            populateFilterDropdowns();
+            renderDashboard();
+            renderSports();
+            renderCoaches();
+            renderSessions();
+            renderMembers();
+            renderFinance();
+            renderWeeklySchedule();
+        }
+
+        function updateSidebarBadges() {
+            document.getElementById('nav-badge-sports').textContent = toFaNum(state.sports.length);
+            document.getElementById('nav-badge-coaches').textContent = toFaNum(state.coaches.length);
+            document.getElementById('nav-badge-sessions').textContent = toFaNum(state.sessions.length);
+            document.getElementById('nav-badge-members').textContent = toFaNum(state.members.length);
+
+            const debtorsCount = state.members.filter(m => m.paymentStatus === 'unpaid').length;
+            const debtorBadge = document.getElementById('nav-badge-debtors');
+            if (debtorsCount > 0) {
+                debtorBadge.textContent = `${toFaNum(debtorsCount)} بدهکار`;
+                debtorBadge.classList.remove('hidden');
+            } else {
+                debtorBadge.classList.add('hidden');
+            }
+        }
+
+        function populateFilterDropdowns() {
+            // فیلتر سانس بر اساس رشته
+            const fsSport = document.getElementById('filter-session-sport');
+            const currentFsSport = fsSport.value;
+            fsSport.innerHTML = `<option value="all">همه رشته‌های ورزشی (${toFaNum(state.sports.length)})</option>` +
+                state.sports.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            if ([...fsSport.options].some(o => o.value === currentFsSport)) fsSport.value = currentFsSport;
+
+            // فیلتر سانس بر اساس مربی
+            const fsCoach = document.getElementById('filter-session-coach');
+            const currentFsCoach = fsCoach.value;
+            fsCoach.innerHTML = `<option value="all">همه مربیان (${toFaNum(state.coaches.length)})</option>` +
+                state.coaches.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            if ([...fsCoach.options].some(o => o.value === currentFsCoach)) fsCoach.value = currentFsCoach;
+
+            // فیلتر اعضا بر اساس سانس
+            const fmSession = document.getElementById('filter-member-session');
+            const currentFmSession = fmSession.value;
+            fmSession.innerHTML = `<option value="all">همه سانس‌ها و کلاس‌ها</option>` +
+                state.sessions.map(se => {
+                    const sp = getSportById(se.sportId);
+                    return `<option value="${se.id}">${se.title || sp.name} (${se.days} - ${se.time})</option>`;
+                }).join('');
+            if ([...fmSession.options].some(o => o.value === currentFmSession)) fmSession.value = currentFmSession;
+        }
+
+        // =====================================================
+        // ۱. رندر داشبورد و حضور و غیاب سریع
+        // =====================================================
+        function renderDashboard() {
+            const totalMembers = state.members.length;
+            const activeMembers = state.members.filter(m => m.attended < m.maxSessions).length;
+            const totalRevenue = state.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+
+            // محاسبه سهم باشگاه و مربیان از کل پرداخت‌ها
+            let totalCoachCommission = 0;
+            state.payments.forEach(p => {
+                const se = getSessionById(p.sessionId);
+                if (se) {
+                    const coach = getCoachById(se.coachId);
+                    totalCoachCommission += (Number(p.amount) * (Number(coach.sharePercent) || 0)) / 100;
+                }
+            });
+            const netClubShare = totalRevenue - totalCoachCommission;
+
+            // محاسبه ظرفیت کل سانس‌ها
+            const totalCapacity = state.sessions.reduce((sum, s) => sum + Number(s.capacity), 0);
+            const occupancyRate = totalCapacity > 0 ? Math.round((totalMembers / totalCapacity) * 100) : 0;
+
+            // بدهکاران یا منقضی‌ها
+            const debtorsOrExpired = state.members.filter(m => m.paymentStatus === 'unpaid' || m.attended >= m.maxSessions).length;
+
+            document.getElementById('kpi-active-members').textContent = toFaNum(activeMembers);
+            document.getElementById('kpi-total-members').textContent = `از ${toFaNum(totalMembers)} پرونده`;
+            document.getElementById('kpi-total-revenue').textContent = toFaNum(totalRevenue);
+            document.getElementById('kpi-club-net-share').textContent = `سهم خالص باشگاه: ${toFaNum(netClubShare)} تومان`;
+            document.getElementById('kpi-active-sessions').textContent = toFaNum(state.sessions.length);
+            document.getElementById('kpi-occupancy-rate').textContent = `${toFaNum(occupancyRate)}٪ تکمیل ظرفیت`;
+            document.getElementById('kpi-sports-coaches-summary').textContent = `${toFaNum(state.sports.length)} رشته ورزشی • ${toFaNum(state.coaches.length)} مربی رسمی`;
+            document.getElementById('kpi-debtors-count').textContent = toFaNum(debtorsOrExpired);
+
+            // رندر لیست حضور و غیاب سریع
+            renderQuickCheckinList();
+
+            // رندر لاگ آخرین ترددها
+            document.getElementById('today-checkin-count').textContent = `${toFaNum(state.checkins.length)} تردد اخیر`;
+            const logContainer = document.getElementById('recent-checkins-log');
+            if (state.checkins.length === 0) {
+                logContainer.innerHTML = `<span class="text-[11px] text-slate-400">هنوز ترددی ثبت نشده است.</span>`;
+            } else {
+                logContainer.innerHTML = state.checkins.slice(0, 5).map(c => `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-700 dark:text-slate-300">
+                        <i class="ph-fill ph-check-circle text-emerald-500"></i>
+                        <span>${c.name}</span>
+                        <span class="text-slate-400">(${c.time})</span>
+                    </span>
+                `).join('');
+            }
+
+            // رندر وضعیت ظرفیت سانس‌ها در داشبورد
+            const sessionsListEl = document.getElementById('dashboard-sessions-list');
+            if (state.sessions.length === 0) {
+                sessionsListEl.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">هیچ سانسی تعریف نشده است.</div>`;
+            } else {
+                sessionsListEl.innerHTML = state.sessions.map(se => {
+                    const sport = getSportById(se.sportId);
+                    const coach = getCoachById(se.coachId);
+                    const enrolled = state.members.filter(m => m.sessionId === se.id).length;
+                    const percent = Math.min(100, Math.round((enrolled / se.capacity) * 100));
+                    const clr = getColorClasses(sport.color);
+
+                    return `
+                        <div class="p-3 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full ${clr.bar}"></span>
+                                    <span class="font-bold text-xs text-slate-800 dark:text-slate-100">${se.title || sport.name}</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500">${se.gender}</span>
+                                </div>
+                                <button onclick="openSessionMembersModal('${se.id}')" class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-emerald-600">
+                                    ${toFaNum(enrolled)} از ${toFaNum(se.capacity)} نفر
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-2">
+                                <span>مربی: ${coach.name}</span>
+                                <span>${se.days} • ساعت ${se.time}</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                                <div class="h-full ${percent >= 90 ? 'bg-rose-500' : clr.bar} transition-all duration-300" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // رندر آخرین پرداخت‌ها در داشبورد
+            const recentPaymentsEl = document.getElementById('dashboard-recent-payments');
+            if (state.payments.length === 0) {
+                recentPaymentsEl.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">تراکنشی ثبت نشده است.</td></tr>`;
+            } else {
+                recentPaymentsEl.innerHTML = [...state.payments].reverse().slice(0, 5).map(p => {
+                    const member = getMemberById(p.memberId);
+                    const se = getSessionById(p.sessionId);
+                    const sport = se ? getSportById(se.sportId) : { name: 'عمومی' };
+                    return `
+                        <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                            <td class="py-2.5 font-semibold text-slate-800 dark:text-slate-200">${member ? member.name : 'حذف شده'}</td>
+                            <td class="py-2.5 text-slate-500">${sport.name}</td>
+                            <td class="py-2.5 font-bold text-emerald-600 dark:text-emerald-400">${toFaNum(p.amount)}</td>
+                            <td class="py-2.5 text-slate-400">${p.method}</td>
+                            <td class="py-2.5 text-left">
+                                <button onclick="showReceiptModal('${p.id}')" class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 p-1" title="مشاهده رسید">
+                                    <i class="ph ph-receipt text-base"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // رندر تفکیک رشته‌ها در داشبورد
+            const sportsBreakdownEl = document.getElementById('dashboard-sports-breakdown');
+            sportsBreakdownEl.innerHTML = state.sports.map(sp => {
+                const spSessionIds = state.sessions.filter(s => s.sportId === sp.id).map(s => s.id);
+                const spMembersCount = state.members.filter(m => spSessionIds.includes(m.sessionId)).length;
+                const clr = getColorClasses(sp.color);
+                return `
+                    <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/80">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg ${clr.bg} ${clr.text} flex items-center justify-center font-bold text-xs">
+                                ${toFaNum(spMembersCount)}
+                            </div>
+                            <div>
+                                <div class="font-semibold text-xs text-slate-800 dark:text-slate-200">${sp.name}</div>
+                                <div class="text-[11px] text-slate-400">شهریه پایه: ${toFaNum(sp.fee)} ت</div>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-slate-500">${toFaNum(spSessionIds.length)} سانس</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderQuickCheckinList() {
+            const query = (document.getElementById('quick-checkin-search').value || '').trim().toLowerCase();
+            const container = document.getElementById('quick-checkin-results');
+
+            const filtered = state.members.filter(m => {
+                if (!query) return true;
+                return m.name.toLowerCase().includes(query) || m.code.includes(query) || m.phone.includes(query);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">ورزشکاری با این مشخصات یافت نشد.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.slice(0, 6).map(m => {
+                const se = getSessionById(m.sessionId);
+                const isExpired = m.attended >= m.maxSessions;
+                const isUnpaid = m.paymentStatus === 'unpaid';
+
+                return `
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800">
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">#${m.code}</span>
+                                <span class="font-bold text-xs text-slate-800 dark:text-slate-100">${m.name}</span>
+                                ${isUnpaid ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">بدهکار</span>` : ''}
+                            </div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                ${se ? se.title : 'بدون سانس'} • جلسه ${toFaNum(m.attended)} از ${toFaNum(m.maxSessions)}
+                            </div>
+                        </div>
+                        <button onclick="recordAttendance('${m.id}')" ${isExpired ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 ${
+                            isExpired 
+                            ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' 
+                            : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
+                        }">
+                            <i class="ph-bold ph-check"></i>
+                            <span>${isExpired ? 'اتمام دوره' : 'ثبت حضور'}</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function recordAttendance(memberId) {
+            const member = getMemberById(memberId);
+            if (!member) return;
+            if (member.attended >= member.maxSessions) {
+                showToast(`جلسات دوره ${member.name} به پایان رسیده است. لطفاً دوره را تمدید کنید.`, 'error');
+                return;
+            }
+            member.attended += 1;
+            const se = getSessionById(member.sessionId);
+            const nowTime = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
+
+            state.checkins.unshift({
+                name: member.name,
+                time: nowTime,
+                sessionTitle: se ? se.title : 'سانس عمومی'
+            });
+
+            saveState();
+            showToast(`حضور ${member.name} ثبت شد (جلسه ${toFaNum(member.attended)} از ${toFaNum(member.maxSessions)})`);
+        }
+
+        // =====================================================
+        // ۲. مدیریت رشته‌های ورزشی (SPORTS CRUD)
+        // =====================================================
+        function renderSports() {
+            const grid = document.getElementById('sports-grid');
+            if (state.sports.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-sm">هیچ رشته ورزشی ثبت نشده است.</div>`;
+                return;
+            }
+
+            grid.innerHTML = state.sports.map(sp => {
+                const clr = getColorClasses(sp.color);
+                const sessionsCount = state.sessions.filter(s => s.sportId === sp.id).length;
+                const sessionIds = state.sessions.filter(s => s.sportId === sp.id).map(s => s.id);
+                const athletesCount = state.members.filter(m => sessionIds.includes(m.sessionId)).length;
+                const sportRevenue = state.payments
+                    .filter(p => sessionIds.includes(p.sessionId))
+                    .reduce((sum, p) => sum + Number(p.amount), 0);
+
+                return `
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-all">
+                        <div>
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl ${clr.bg} ${clr.text} flex items-center justify-center text-lg">
+                                        <i class="ph-duotone ph-barbell"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-900 dark:text-white">${sp.name}</h4>
+                                        <span class="text-[11px] text-slate-400">دوره ${toFaNum(sp.sessionsPerMonth)} جلسه‌ای در ماه</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="openSportModal('${sp.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800" title="ویرایش">
+                                        <i class="ph ph-pencil-simple text-base"></i>
+                                    </button>
+                                    <button onclick="deleteSport('${sp.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50" title="حذف">
+                                        <i class="ph ph-trash text-base"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">${sp.desc || 'بدون توضیحات تکمیلی'}</p>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">شهریه پایه ماهانه:</span>
+                                <span class="font-bold text-slate-900 dark:text-white">${toFaNum(sp.fee)} تومان</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">وضعیت فعال:</span>
+                                <span class="font-medium text-slate-700 dark:text-slate-300">${toFaNum(sessionsCount)} سانس • ${toFaNum(athletesCount)} ورزشکار</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">درآمد وصول‌شده رشته:</span>
+                                <span class="font-semibold text-emerald-600 dark:text-emerald-400">${toFaNum(sportRevenue)} تومان</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openSportModal(sportId = null) {
+            document.getElementById('sport-id').value = sportId || '';
+            if (sportId) {
+                const sp = getSportById(sportId);
+                document.getElementById('modal-sport-title').textContent = 'ویرایش رشته ورزشی';
+                document.getElementById('sport-name').value = sp.name;
+                document.getElementById('sport-fee').value = sp.fee;
+                document.getElementById('sport-sessions-count').value = sp.sessionsPerMonth;
+                document.getElementById('sport-color').value = sp.color || 'emerald';
+                document.getElementById('sport-desc').value = sp.desc || '';
+            } else {
+                document.getElementById('modal-sport-title').textContent = 'افزودن رشته ورزشی جدید';
+                document.getElementById('sport-name').value = '';
+                document.getElementById('sport-fee').value = 1000000;
+                document.getElementById('sport-sessions-count').value = '12';
+                document.getElementById('sport-color').value = 'emerald';
+                document.getElementById('sport-desc').value = '';
+            }
+            openModal('modal-sport');
+        }
+
+        function saveSport(e) {
+            e.preventDefault();
+            const id = document.getElementById('sport-id').value;
+            const name = document.getElementById('sport-name').value.trim();
+            const fee = Number(document.getElementById('sport-fee').value);
+            const sessionsPerMonth = Number(document.getElementById('sport-sessions-count').value);
+            const color = document.getElementById('sport-color').value;
+            const desc = document.getElementById('sport-desc').value.trim();
+
+            if (id) {
+                const idx = state.sports.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    state.sports[idx] = { ...state.sports[idx], name, fee, sessionsPerMonth, color, desc };
+                }
+                showToast(`رشته «${name}» بروزرسانی شد.`);
+            } else {
+                state.sports.push({
+                    id: 'sp_' + Date.now(),
+                    name, fee, sessionsPerMonth, color, desc
+                });
+                showToast(`رشته ورزشی «${name}» اضافه شد.`);
+            }
+            closeModal('modal-sport');
+            saveState();
+        }
+
+        function deleteSport(id) {
+            const sp = getSportById(id);
+            const linkedSessions = state.sessions.filter(s => s.sportId === id).length;
+            if (linkedSessions > 0) {
+                showToast(`امکان حذف وجود ندارد؛ ${toFaNum(linkedSessions)} سانس به رشته «${sp.name}» متصل است.`, 'error');
+                return;
+            }
+            showCustomConfirm(
+                `حذف رشته ${sp.name}`,
+                'آیا از حذف این رشته ورزشی اطمینان دارید؟',
+                () => {
+                    state.sports = state.sports.filter(s => s.id !== id);
+                    saveState();
+                    showToast('رشته ورزشی حذف شد.');
+                }
+            );
+        }
+
+        // =====================================================
+        // ۳. مدیریت مربیان (COACHES CRUD)
+        // =====================================================
+        function renderCoaches() {
+            const grid = document.getElementById('coaches-grid');
+            if (state.coaches.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-sm">هنوز مربی‌ای ثبت نشده است.</div>`;
+                return;
+            }
+
+            grid.innerHTML = state.coaches.map(co => {
+                const sp = getSportById(co.sportId);
+                const coachSessions = state.sessions.filter(s => s.coachId === co.id);
+                const coachSessionIds = coachSessions.map(s => s.id);
+                const athletesCount = state.members.filter(m => coachSessionIds.includes(m.sessionId)).length;
+
+                // محاسبه پورسانت مربی از پرداخت‌های وصول‌شده سانس‌های این مربی
+                const totalCollectedForCoach = state.payments
+                    .filter(p => coachSessionIds.includes(p.sessionId))
+                    .reduce((sum, p) => sum + Number(p.amount), 0);
+                const coachEarned = Math.round((totalCollectedForCoach * Number(co.sharePercent)) / 100);
+
+                return `
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-sm">
+                                        ${co.name.slice(0, 2)}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-900 dark:text-white">${co.name}</h4>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">مربی ${sp.name}</span>
+                                            <span class="text-slate-300">•</span>
+                                            <span class="text-[11px] text-slate-400">${co.gender}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="openCoachModal('${co.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">
+                                        <i class="ph ph-pencil-simple text-base"></i>
+                                    </button>
+                                    <button onclick="deleteCoach('${co.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50">
+                                        <i class="ph ph-trash text-base"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 grid grid-cols-2 gap-2 text-center">
+                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-[11px] text-slate-400 block">سانس‌های فعال</span>
+                                    <span class="font-bold text-sm text-slate-800 dark:text-slate-200">${toFaNum(coachSessions.length)} کلاس</span>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-[11px] text-slate-400 block">شاگردان ثبت‌نامی</span>
+                                    <span class="font-bold text-sm text-slate-800 dark:text-slate-200">${toFaNum(athletesCount)} نفر</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">تلفن تماس:</span>
+                                <span class="font-mono text-slate-600 dark:text-slate-300">${co.phone}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">درصد سهم قرارداد:</span>
+                                <span class="font-bold text-indigo-600 dark:text-indigo-400">${toFaNum(co.sharePercent)}٪ از شهریه</span>
+                            </div>
+                            <div class="flex justify-between pt-1">
+                                <span class="text-slate-500 font-medium">سهم کارکرد فعلی:</span>
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400">${toFaNum(coachEarned)} تومان</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openCoachModal(coachId = null) {
+            const sportSelect = document.getElementById('coach-sport');
+            sportSelect.innerHTML = state.sports.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+            document.getElementById('coach-id').value = coachId || '';
+            if (coachId) {
+                const co = getCoachById(coachId);
+                document.getElementById('modal-coach-title').textContent = 'ویرایش اطلاعات مربی';
+                document.getElementById('coach-name').value = co.name;
+                document.getElementById('coach-sport').value = co.sportId;
+                document.getElementById('coach-gender').value = co.gender;
+                document.getElementById('coach-phone').value = co.phone;
+                document.getElementById('coach-share').value = co.sharePercent;
+            } else {
+                document.getElementById('modal-coach-title').textContent = 'ثبت مربی جدید در باشگاه';
+                document.getElementById('coach-name').value = '';
+                document.getElementById('coach-phone').value = '';
+                document.getElementById('coach-share').value = 45;
+            }
+            openModal('modal-coach');
+        }
+
+        function saveCoach(e) {
+            e.preventDefault();
+            const id = document.getElementById('coach-id').value;
+            const name = document.getElementById('coach-name').value.trim();
+            const sportId = document.getElementById('coach-sport').value;
+            const gender = document.getElementById('coach-gender').value;
+            const phone = document.getElementById('coach-phone').value.trim();
+            const sharePercent = Number(document.getElementById('coach-share').value);
+
+            if (id) {
+                const idx = state.coaches.findIndex(c => c.id === id);
+                if (idx > -1) {
+                    state.coaches[idx] = { ...state.coaches[idx], name, sportId, gender, phone, sharePercent };
+                }
+                showToast(`اطلاعات مربی «${name}» بروزرسانی شد.`);
+            } else {
+                state.coaches.push({
+                    id: 'co_' + Date.now(),
+                    name, sportId, gender, phone, sharePercent
+                });
+                showToast(`مربی جدید «${name}» اضافه شد.`);
+            }
+            closeModal('modal-coach');
+            saveState();
+        }
+
+        function deleteCoach(id) {
+            const co = getCoachById(id);
+            const linked = state.sessions.filter(s => s.coachId === id).length;
+            if (linked > 0) {
+                showToast(`امکان حذف نیست؛ مربی «${co.name}» مسئول ${toFaNum(linked)} سانس فعال است.`, 'error');
+                return;
+            }
+            showCustomConfirm(
+                `حذف مربی ${co.name}`,
+                'آیا از حذف پرونده این مربی اطمینان دارید؟',
+                () => {
+                    state.coaches = state.coaches.filter(c => c.id !== id);
+                    saveState();
+                    showToast('پرونده مربی حذف شد.');
+                }
+            );
+        }
+
+        // =====================================================
+        // ۴. مدیریت سانس‌ها و کلاس‌ها (SESSIONS CRUD)
+        // =====================================================
+        function renderSessions() {
+            const sportFilter = document.getElementById('filter-session-sport').value;
+            const coachFilter = document.getElementById('filter-session-coach').value;
+            const genderFilter = document.getElementById('filter-session-gender').value;
+
+            const filtered = state.sessions.filter(se => {
+                if (sportFilter !== 'all' && se.sportId !== sportFilter) return false;
+                if (coachFilter !== 'all' && se.coachId !== coachFilter) return false;
+                if (genderFilter !== 'all' && se.gender !== genderFilter) return false;
+                return true;
+            });
+
+            const grid = document.getElementById('sessions-grid');
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800">هیچ سانسی مطابق با فیلتر انتخابی یافت نشد.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(se => {
+                const sp = getSportById(se.sportId);
+                const co = getCoachById(se.coachId);
+                const enrolledMembers = state.members.filter(m => m.sessionId === se.id);
+                const count = enrolledMembers.length;
+                const percent = Math.min(100, Math.round((count / se.capacity) * 100));
+                const clr = getColorClasses(sp.color);
+
+                return `
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-3">
+                                <span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold ${clr.bg} ${clr.text}">${sp.name}</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="px-2 py-0.5 rounded-md text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium">${se.gender}</span>
+                                    <button onclick="openSessionModal('${se.id}')" class="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+                                        <i class="ph ph-pencil-simple text-base"></i>
+                                    </button>
+                                    <button onclick="deleteSession('${se.id}')" class="p-1 text-slate-400 hover:text-rose-600">
+                                        <i class="ph ph-trash text-base"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">${se.title || sp.name}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+                                <i class="ph-fill ph-whistle text-slate-400"></i>
+                                <span>مربی: <strong class="text-slate-700 dark:text-slate-200">${co.name}</strong></span>
+                            </p>
+
+                            <div class="mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 space-y-1.5 text-xs">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">روزهای برگزاری:</span>
+                                    <span class="font-semibold text-slate-700 dark:text-slate-300">${se.days}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">ساعت کلاس:</span>
+                                    <span class="font-semibold text-slate-700 dark:text-slate-300">${se.time}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">شهریه دوره:</span>
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">${toFaNum(se.fee)} تومان</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                            <div class="flex items-center justify-between text-xs mb-1.5">
+                                <span class="text-slate-500">ظرفیت تکمیل‌شده:</span>
+                                <span class="font-bold ${percent >= 90 ? 'text-rose-600' : 'text-slate-800 dark:text-slate-200'}">${toFaNum(count)} از ${toFaNum(se.capacity)} نفر (${toFaNum(percent)}٪)</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-3">
+                                <div class="h-full ${percent >= 90 ? 'bg-rose-500' : clr.bar} transition-all" style="width: ${percent}%"></div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="openSessionMembersModal('${se.id}')" class="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors">
+                                    مشاهده اعضا (${toFaNum(count)})
+                                </button>
+                                <button onclick="openMemberModal(null, '${se.id}')" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 text-xs font-semibold transition-colors" title="ثبت‌نام سریع در این سانس">
+                                    + ثبت‌نام
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openSessionModal(sessionId = null) {
+            if (state.sports.length === 0 || state.coaches.length === 0) {
+                showToast('ابتدا حداقل یک رشته ورزشی و یک مربی تعریف کنید.', 'error');
+                return;
+            }
+            const sportSel = document.getElementById('session-sport');
+            const coachSel = document.getElementById('session-coach');
+
+            sportSel.innerHTML = state.sports.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            coachSel.innerHTML = state.coaches.map(c => `<option value="${c.id}">${c.name} (${c.gender})</option>`).join('');
+
+            document.getElementById('session-id').value = sessionId || '';
+            if (sessionId) {
+                const se = getSessionById(sessionId);
+                document.getElementById('modal-session-title').textContent = 'ویرایش سانس';
+                sportSel.value = se.sportId;
+                coachSel.value = se.coachId;
+                document.getElementById('session-title').value = se.title;
+                document.getElementById('session-days').value = se.days;
+                document.getElementById('session-time').value = se.time;
+                document.getElementById('session-gender').value = se.gender;
+                document.getElementById('session-capacity').value = se.capacity;
+                document.getElementById('session-fee').value = se.fee;
+            } else {
+                document.getElementById('modal-session-title').textContent = 'تعریف سانس جدید';
+                document.getElementById('session-title').value = '';
+                document.getElementById('session-capacity').value = 25;
+                onSessionSportChange();
+            }
+            openModal('modal-session');
+        }
+
+        function onSessionSportChange() {
+            const sportId = document.getElementById('session-sport').value;
+            const sp = getSportById(sportId);
+            if (sp) {
+                document.getElementById('session-fee').value = sp.fee;
+            }
+        }
+
+        function saveSession(e) {
+            e.preventDefault();
+            const id = document.getElementById('session-id').value;
+            const sportId = document.getElementById('session-sport').value;
+            const coachId = document.getElementById('session-coach').value;
+            const sp = getSportById(sportId);
+            const days = document.getElementById('session-days').value;
+            const time = document.getElementById('session-time').value;
+            const gender = document.getElementById('session-gender').value;
+            const capacity = Number(document.getElementById('session-capacity').value);
+            const fee = Number(document.getElementById('session-fee').value);
+            let title = document.getElementById('session-title').value.trim();
+            if (!title) {
+                title = `${sp.name} (${days})`;
+            }
+
+            if (id) {
+                const idx = state.sessions.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    state.sessions[idx] = { ...state.sessions[idx], title, sportId, coachId, days, time, gender, capacity, fee };
+                }
+                showToast(`سانس «${title}» بروزرسانی شد.`);
+            } else {
+                state.sessions.push({
+                    id: 'se_' + Date.now(),
+                    title, sportId, coachId, days, time, gender, capacity, fee
+                });
+                showToast(`سانس جدید «${title}» ایجاد شد.`);
+            }
+            closeModal('modal-session');
+            saveState();
+        }
+
+        function deleteSession(id) {
+            const se = getSessionById(id);
+            const enrolled = state.members.filter(m => m.sessionId === id).length;
+            if (enrolled > 0) {
+                showToast(`امکان حذف نیست؛ ${toFaNum(enrolled)} ورزشکار در این سانس عضو هستند.`, 'error');
+                return;
+            }
+            showCustomConfirm(
+                `حذف سانس ${se.title}`,
+                'آیا از حذف این سانس کلاسی اطمینان دارید؟',
+                () => {
+                    state.sessions = state.sessions.filter(s => s.id !== id);
+                    saveState();
+                    showToast('سانس مورد نظر حذف شد.');
+                }
+            );
+        }
+
+        function openSessionMembersModal(sessionId) {
+            const se = getSessionById(sessionId);
+            if (!se) return;
+            const sp = getSportById(se.sportId);
+            const co = getCoachById(se.coachId);
+            const members = state.members.filter(m => m.sessionId === sessionId);
+
+            document.getElementById('modal-session-members-title').textContent = `ورزشکاران سانس: ${se.title || sp.name}`;
+            document.getElementById('modal-session-members-subtitle').textContent = `مربی: ${co.name} • ${se.days} ساعت ${se.time} • ظرفیت: ${toFaNum(members.length)} از ${toFaNum(se.capacity)}`;
+
+            const listEl = document.getElementById('modal-session-members-list');
+            if (members.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-8 text-slate-400">هنوز ورزشکاری در این سانس ثبت‌نام نکرده است.</div>`;
+            } else {
+                listEl.innerHTML = members.map(m => `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700">
+                        <div>
+                            <div class="font-bold text-slate-800 dark:text-slate-100">#${m.code} - ${m.name}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">موبایل: ${m.phone} • جلسات: ${toFaNum(m.attended)} از ${toFaNum(m.maxSessions)}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold ${m.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400'}">
+                                ${m.paymentStatus === 'paid' ? 'تسویه شده' : 'بدهکار'}
+                            </span>
+                            <button onclick="recordAttendance('${m.id}'); openSessionMembersModal('${sessionId}');" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-medium">+۱ حضور</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const addBtn = document.getElementById('btn-add-member-to-this-session');
+            addBtn.onclick = () => {
+                closeModal('modal-session-members');
+                openMemberModal(null, sessionId);
+            };
+
+            openModal('modal-session-members');
+        }
+
+        // =====================================================
+        // ۵. مدیریت اعضا و ثبت‌نام (MEMBERS CRUD)
+        // =====================================================
+        function setMemberFilter(status) {
+            document.getElementById('filter-member-status').value = status;
+            renderMembers();
+        }
+
+        function renderMembers() {
+            const search = (document.getElementById('member-search-input').value || '').trim().toLowerCase();
+            const sessionFilter = document.getElementById('filter-member-session').value;
+            const statusFilter = document.getElementById('filter-member-status').value;
+
+            const filtered = state.members.filter(m => {
+                if (search && !m.name.toLowerCase().includes(search) && !m.phone.includes(search) && !m.code.includes(search)) return false;
+                if (sessionFilter !== 'all' && m.sessionId !== sessionFilter) return false;
+                if (statusFilter === 'paid' && m.paymentStatus !== 'paid') return false;
+                if (statusFilter === 'unpaid' && m.paymentStatus !== 'unpaid') return false;
+                if (statusFilter === 'expired' && m.attended < m.maxSessions) return false;
+                return true;
+            });
+
+            const tbody = document.getElementById('members-table-body');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-10 text-center text-slate-400">ورزشکاری با این مشخصات یافت نشد.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(m => {
+                const se = getSessionById(m.sessionId);
+                const sp = se ? getSportById(se.sportId) : { name: 'نامشخص', color: 'emerald' };
+                const co = se ? getCoachById(se.coachId) : { name: '--' };
+                const isExpired = m.attended >= m.maxSessions;
+                const progress = Math.min(100, Math.round((m.attended / m.maxSessions) * 100));
+
+                return `
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center gap-2.5">
+                                <span class="font-mono text-[11px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold">#${m.code}</span>
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white">${m.name}</div>
+                                    <div class="text-[11px] text-slate-400 font-mono">${m.phone}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-semibold text-slate-800 dark:text-slate-200">${se ? se.title : 'حذف شده'}</div>
+                            <div class="text-[11px] text-slate-400">${se ? `${se.days} • ${se.time}` : ''}</div>
+                        </td>
+                        <td class="py-3.5 px-4 text-slate-600 dark:text-slate-300 font-medium">${co.name}</td>
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center justify-between text-[11px] mb-1 w-32">
+                                <span class="font-semibold ${isExpired ? 'text-rose-600' : 'text-slate-700 dark:text-slate-300'}">${toFaNum(m.attended)} از ${toFaNum(m.maxSessions)} جلسه</span>
+                                <span class="text-slate-400">${isExpired ? 'اتمام' : `${toFaNum(m.maxSessions - m.attended)} مانده`}</span>
+                            </div>
+                            <div class="w-32 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                                <div class="h-full ${isExpired ? 'bg-rose-500' : 'bg-emerald-500'}" style="width: ${progress}%"></div>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            ${m.paymentStatus === 'paid' 
+                                ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-semibold text-[11px]"><i class="ph-fill ph-check-circle"></i> تسویه شده</span>`
+                                : `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-semibold text-[11px]"><i class="ph-fill ph-warning-circle"></i> بدهکار (${se ? toFaNum(se.fee) : 0} ت)</span>`
+                            }
+                        </td>
+                        <td class="py-3.5 px-4 text-left">
+                            <div class="flex items-center justify-end gap-1.5">
+                                <button onclick="recordAttendance('${m.id}')" ${isExpired ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold ${isExpired ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 text-white'}" title="ثبت ۱ جلسه حضور">
+                                    +۱ حضور
+                                </button>
+                                <button onclick="openPaymentModal('${m.id}')" class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-[11px] font-semibold" title="ثبت شهریه یا تمدید">
+                                    ${m.paymentStatus === 'unpaid' ? 'تسویه شهریه' : 'تمدید'}
+                                </button>
+                                <button onclick="openMemberModal('${m.id}')" class="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+                                    <i class="ph ph-pencil-simple text-base"></i>
+                                </button>
+                                <button onclick="deleteMember('${m.id}')" class="p-1.5 text-slate-400 hover:text-rose-600">
+                                    <i class="ph ph-trash text-base"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openMemberModal(memberId = null, preselectedSessionId = null) {
+            if (state.sessions.length === 0) {
+                showToast('ابتدا حداقل یک سانس فعال تعریف کنید.', 'error');
+                return;
+            }
+            const sessSelect = document.getElementById('member-session');
+            sessSelect.innerHTML = state.sessions.map(se => {
+                const sp = getSportById(se.sportId);
+                const count = state.members.filter(m => m.sessionId === se.id).length;
+                return `<option value="${se.id}">${se.title || sp.name} (${se.gender} - ${se.days} ${se.time}) [ظرفیت: ${toFaNum(count)}/${toFaNum(se.capacity)}]</option>`;
+            }).join('');
+
+            document.getElementById('member-id').value = memberId || '';
+            const initialPayRow = document.getElementById('member-initial-payment-row');
+
+            if (memberId) {
+                const m = getMemberById(memberId);
+                document.getElementById('modal-member-title').textContent = `ویرایش پرونده #${m.code} - ${m.name}`;
+                document.getElementById('member-name').value = m.name;
+                document.getElementById('member-phone').value = m.phone;
+                sessSelect.value = m.sessionId;
+                initialPayRow.classList.add('hidden');
+            } else {
+                document.getElementById('modal-member-title').textContent = 'ثبت‌نام ورزشکار جدید';
+                document.getElementById('member-name').value = '';
+                document.getElementById('member-phone').value = '';
+                if (preselectedSessionId) sessSelect.value = preselectedSessionId;
+                initialPayRow.classList.remove('hidden');
+                document.getElementById('member-payment-status').value = 'paid';
+                toggleInitialPaymentMethod();
+            }
+
+            onMemberSessionSelect();
+            openModal('modal-member');
+        }
+
+        function onMemberSessionSelect() {
+            const seId = document.getElementById('member-session').value;
+            const se = getSessionById(seId);
+            if (!se) return;
+            const sp = getSportById(se.sportId);
+            const co = getCoachById(se.coachId);
+
+            document.getElementById('preview-sport-coach').textContent = `رشته ${sp.name} • مربی: ${co.name}`;
+            document.getElementById('preview-days-time').textContent = `${se.gender} | ${se.days} ساعت ${se.time}`;
+            document.getElementById('preview-session-fee').textContent = `${toFaNum(se.fee)} تومان`;
+            document.getElementById('preview-total-sessions').textContent = `دوره ${toFaNum(sp.sessionsPerMonth)} جلسه‌ای`;
+        }
+
+        function toggleInitialPaymentMethod() {
+            const status = document.getElementById('member-payment-status').value;
+            const box = document.getElementById('member-payment-method-box');
+            if (status === 'paid') {
+                box.classList.remove(' opacity-40', 'pointer-events-none');
+            } else {
+                box.classList.add('opacity-40', 'pointer-events-none');
+            }
+        }
+
+        function saveMember(e) {
+            e.preventDefault();
+            const id = document.getElementById('member-id').value;
+            const name = document.getElementById('member-name').value.trim();
+            const phone = document.getElementById('member-phone').value.trim();
+            const sessionId = document.getElementById('member-session').value;
+            const se = getSessionById(sessionId);
+            const sp = getSportById(se.sportId);
+
+            if (id) {
+                const idx = state.members.findIndex(m => m.id === id);
+                if (idx > -1) {
+                    state.members[idx] = {
+                        ...state.members[idx],
+                        name,
+                        phone,
+                        sessionId,
+                        maxSessions: sp.sessionsPerMonth
+                    };
+                }
+                showToast(`پرونده «${name}» بروزرسانی شد.`);
+            } else {
+                const nextCode = String(101 + state.members.length);
+                const paymentStatus = document.getElementById('member-payment-status').value;
+                const method = document.getElementById('member-payment-method').value;
+                const newMemberId = 'm_' + Date.now();
+
+                state.members.push({
+                    id: newMemberId,
+                    code: nextCode,
+                    name,
+                    phone,
+                    sessionId,
+                    attended: 0,
+                    maxSessions: sp.sessionsPerMonth,
+                    paymentStatus,
+                    joinDate: getNowPersianString().split(' - ')[0]
+                });
+
+                if (paymentStatus === 'paid') {
+                    state.payments.push({
+                        id: 'pay_' + Date.now(),
+                        receiptNo: String(1041 + state.payments.length),
+                        memberId: newMemberId,
+                        sessionId,
+                        amount: se.fee,
+                        method,
+                        date: getNowPersianString()
+                    });
+                }
+
+                showToast(`ورزشکار «${name}» با کد عضویت #${nextCode} ثبت‌نام شد.`);
+            }
+
+            closeModal('modal-member');
+            saveState();
+        }
+
+        function deleteMember(id) {
+            const m = getMemberById(id);
+            showCustomConfirm(
+                `حذف پرونده ${m.name}`,
+                'آیا از حذف این ورزشکار از لیست اعضا اطمینان دارید؟',
+                () => {
+                    state.members = state.members.filter(x => x.id !== id);
+                    saveState();
+                    showToast('پرونده ورزشکار حذف شد.');
+                }
+            );
+        }
+
+        // =====================================================
+        // ۶. مدیریت مالی، شهریه‌ها و تسویه مربیان (FINANCE)
+        // =====================================================
+        function renderFinance() {
+            const totalIncome = state.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+
+            // محاسبه سهم هر مربی و کل سهم مربیان
+            let totalCoachShare = 0;
+            const coachBreakdown = state.coaches.map(co => {
+                const coachSessionIds = state.sessions.filter(s => s.coachId === co.id).map(s => s.id);
+                const coachPayments = state.payments.filter(p => coachSessionIds.includes(p.sessionId));
+                const collected = coachPayments.reduce((sum, p) => sum + Number(p.amount), 0);
+                const shareAmount = Math.round((collected * Number(co.sharePercent)) / 100);
+                totalCoachShare += shareAmount;
+                return {
+                    coach: co,
+                    collected,
+                    shareAmount,
+                    paymentsCount: coachPayments.length
+                };
+            });
+
+            const clubNet = totalIncome - totalCoachShare;
+
+            // محاسبه مطالبات معوق (اعضای بدهکار)
+            const unpaidAmount = state.members
+                .filter(m => m.paymentStatus === 'unpaid')
+                .reduce((sum, m) => {
+                    const se = getSessionById(m.sessionId);
+                    return sum + (se ? Number(se.fee) : 0);
+                }, 0);
+
+            document.getElementById('fin-total-income').textContent = toFaNum(totalIncome);
+            document.getElementById('fin-club-share').textContent = toFaNum(clubNet);
+            document.getElementById('fin-coaches-share').textContent = toFaNum(totalCoachShare);
+            document.getElementById('fin-unpaid-amount').textContent = toFaNum(unpaidAmount);
+
+            // جدول پرداخت‌ها
+            const tbody = document.getElementById('finance-payments-tbody');
+            if (state.payments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-slate-400">هنوز پرداختی ثبت نشده است.</td></tr>`;
+            } else {
+                tbody.innerHTML = [...state.payments].reverse().map(p => {
+                    const m = getMemberById(p.memberId);
+                    const se = getSessionById(p.sessionId);
+                    const sp = se ? getSportById(se.sportId) : { name: 'عمومی' };
+
+                    return `
+                        <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                            <td class="py-3 px-2 font-mono text-slate-400">#${p.receiptNo}</td>
+                            <td class="py-3 px-2 font-bold text-slate-800 dark:text-slate-100">${m ? m.name : 'ورزشکار حذف‌شده'}</td>
+                            <td class="py-3 px-2 text-slate-500">${se ? se.title : sp.name}</td>
+                            <td class="py-3 px-2 font-bold text-emerald-600 dark:text-emerald-400">${toFaNum(p.amount)}</td>
+                            <td class="py-3 px-2">
+                                <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px]">${p.method}</span>
+                            </td>
+                            <td class="py-3 px-2 text-slate-400 text-[11px]">${p.date}</td>
+                            <td class="py-3 px-2 text-left">
+                                <button onclick="showReceiptModal('${p.id}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-medium">
+                                    <i class="ph ph-receipt"></i>
+                                    <span>قبض</span>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // ترازنامه مربیان
+            const settlementsEl = document.getElementById('finance-coach-settlements');
+            settlementsEl.innerHTML = coachBreakdown.map(item => `
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 space-y-2 text-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-800 dark:text-slate-100">${item.coach.name}</span>
+                        <span class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 font-semibold text-[11px]">قرارداد ${toFaNum(item.coach.sharePercent)}٪</span>
+                    </div>
+                    <div class="flex justify-between text-[11px] text-slate-400">
+                        <span>کل شهریه وصولی کلاس‌ها (${toFaNum(item.paymentsCount)} قبض):</span>
+                        <span>${toFaNum(item.collected)} ت</span>
+                    </div>
+                    <div class="flex justify-between pt-1.5 border-t border-slate-200/60 dark:border-slate-700/60">
+                        <span class="text-slate-500 font-medium">سهم خالص قابل پرداخت:</span>
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400">${toFaNum(item.shareAmount)} تومان</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openPaymentModal(preselectedMemberId = null) {
+            if (state.members.length === 0) {
+                showToast('ابتدا ورزشکار ثبت‌نام کنید.', 'error');
+                return;
+            }
+            const memSelect = document.getElementById('payment-member');
+            // اولویت نمایش با بدهکاران در بالای لیست
+            const sortedMembers = [...state.members].sort((a, b) => (a.paymentStatus === 'unpaid' ? -1 : 1));
+            memSelect.innerHTML = sortedMembers.map(m => {
+                const statusLabel = m.paymentStatus === 'unpaid' ? '🔴 بدهکار شهریه' : '🟢 تسویه شده (تمدید)';
+                return `<option value="${m.id}">#${m.code} - ${m.name} [${statusLabel}]</option>`;
+            }).join('');
+
+            if (preselectedMemberId) {
+                memSelect.value = preselectedMemberId;
+            }
+            onPaymentMemberChange();
+            openModal('modal-payment');
+        }
+
+        function onPaymentMemberChange() {
+            const memberId = document.getElementById('payment-member').value;
+            const m = getMemberById(memberId);
+            if (!m) return;
+            const se = getSessionById(m.sessionId);
+            const sp = se ? getSportById(se.sportId) : { name: 'نامشخص' };
+            const co = se ? getCoachById(se.coachId) : { name: '--' };
+
+            document.getElementById('payment-amount').value = se ? se.fee : 1000000;
+            document.getElementById('payment-reset-sessions').checked = (m.attended >= m.maxSessions || m.paymentStatus === 'paid');
+
+            document.getElementById('payment-member-info').innerHTML = `
+                <div class="flex justify-between"><span class="text-slate-400">سانس فعلی:</span><span class="font-semibold text-slate-700 dark:text-slate-200">${se ? se.title : sp.name} (${co.name})</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">وضعیت فعلی:</span><span class="font-semibold ${m.paymentStatus === 'unpaid' ? 'text-rose-600' : 'text-emerald-600'}">${m.paymentStatus === 'unpaid' ? 'بدهکار شهریه' : 'تسویه شده'} • جلسه ${toFaNum(m.attended)} از ${toFaNum(m.maxSessions)}</span></div>
+            `;
+        }
+
+        function savePayment(e) {
+            e.preventDefault();
+            const memberId = document.getElementById('payment-member').value;
+            const amount = Number(document.getElementById('payment-amount').value);
+            const method = document.getElementById('payment-method').value;
+            const resetSessions = document.getElementById('payment-reset-sessions').checked;
+
+            const member = getMemberById(memberId);
+            if (!member) return;
+
+            member.paymentStatus = 'paid';
+            if (resetSessions) {
+                member.attended = 0;
+            }
+
+            const newPay = {
+                id: 'pay_' + Date.now(),
+                receiptNo: String(1041 + state.payments.length),
+                memberId: member.id,
+                sessionId: member.sessionId,
+                amount,
+                method,
+                date: getNowPersianString()
+            };
+
+            state.payments.push(newPay);
+            closeModal('modal-payment');
+            saveState();
+            showToast(`شهریه «${member.name}» به مبلغ ${toFaNum(amount)} تومان ثبت شد.`);
+            showReceiptModal(newPay.id);
+        }
+
+        function showReceiptModal(paymentId) {
+            const p = state.payments.find(x => x.id === paymentId);
+            if (!p) return;
+            const m = getMemberById(p.memberId);
+            const se = getSessionById(p.sessionId);
+            const sp = se ? getSportById(se.sportId) : { name: 'عمومی' };
+            const co = se ? getCoachById(se.coachId) : { name: '--' };
+
+            document.getElementById('receipt-code').textContent = `شماره قبض: #${p.receiptNo}`;
+            document.getElementById('receipt-member').textContent = m ? `${m.name} (کد #${m.code})` : 'نامشخص';
+            document.getElementById('receipt-sport').textContent = sp.name;
+            document.getElementById('receipt-session').textContent = se ? `${se.days} (${se.time}) - مربی: ${co.name}` : '--';
+            document.getElementById('receipt-method').textContent = p.method;
+            document.getElementById('receipt-date').textContent = p.date;
+            document.getElementById('receipt-amount').textContent = `${toFaNum(p.amount)} تومان`;
+
+            openModal('modal-receipt');
+        }
+
+        // =====================================================
+        // ۷. برنامه هفتگی کل باشگاه (WEEKLY SCHEDULE MATRIX)
+        // =====================================================
+        function renderWeeklySchedule() {
+            const genderFilter = document.getElementById('schedule-gender-filter').value;
+            const container = document.getElementById('schedule-matrix-container');
+
+            const groups = [
+                { key: 'روزهای زوج', title: 'روزهای زوج', sub: 'شنبه، دوشنبه، چهارشنبه', icon: 'ph-calendar' },
+                { key: 'روزهای فرد', title: 'روزهای فرد', sub: 'یکشنبه، سه‌شنبه، پنج‌شنبه', icon: 'ph-calendar-plus' },
+                { key: 'همه روزه', title: 'کلاس‌های همه‌روزه / VIP', sub: 'شنبه تا پنج‌شنبه', icon: 'ph-star' }
+            ];
+
+            container.innerHTML = groups.map(g => {
+                const items = state.sessions.filter(s => {
+                    if (s.days !== g.key) return false;
+                    if (genderFilter !== 'all' && s.gender !== genderFilter) return false;
+                    return true;
+                });
+
+                return `
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden flex flex-col">
+                        <div class="p-4 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/70 dark:border-slate-800 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-900 dark:text-white">${g.title}</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5">${g.sub}</p>
+                            </div>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                                ${toFaNum(items.length)} سانس
+                            </span>
+                        </div>
+                        <div class="p-4 space-y-3 flex-1">
+                            ${items.length === 0 
+                                ? `<div class="text-center py-8 text-xs text-slate-400">سانسی در این روزها ثبت نشده است.</div>`
+                                : items.map(se => {
+                                    const sp = getSportById(se.sportId);
+                                    const co = getCoachById(se.coachId);
+                                    const count = state.members.filter(m => m.sessionId === se.id).length;
+                                    const clr = getColorClasses(sp.color);
+                                    return `
+                                        <div onclick="openSessionMembersModal('${se.id}')" class="p-3.5 rounded-xl border ${clr.border} ${clr.bg} cursor-pointer hover:scale-[1.01] transition-transform">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="font-bold text-xs text-slate-900 dark:text-white">${se.time}</span>
+                                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300">${se.gender}</span>
+                                            </div>
+                                            <div class="font-bold text-xs ${clr.text} mt-1">${se.title || sp.name}</div>
+                                            <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
+                                                <span>مربی: ${co.name}</span>
+                                                <span class="font-semibold">${toFaNum(count)}/${toFaNum(se.capacity)} نفر</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // راه‌اندازی اولیه در زمان بارگذاری صفحه
+        window.onload = function () {
+            document.getElementById('current-persian-date').textContent = getTodayPersianHeader();
+            switchTab('dashboard');
+        };
+    </script>
+</body>
+</html>
